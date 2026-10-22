@@ -1,0 +1,202 @@
+export const translations = {
+  en: {
+    brand: 'MediKiosk',
+    ministryTag: 'Ministry of Ayush • AIIA',
+    nav: {
+      overview: 'Overview',
+      journey: 'Patient Journey',
+      capabilities: 'Capabilities',
+      patient: 'Patient Health',
+      physician: 'Physician Workspace',
+      triage: 'Triage Board',
+      analytics: 'Analytics',
+      searchPlaceholder: 'Search patients, cases, diagnoses, or actions...',
+      signIn: 'Sign In',
+      getStarted: 'Get Started',
+      signOut: 'Sign Out',
+      darkMode: 'Dark Appearance',
+      lightMode: 'Light Appearance',
+      largeText: 'Larger Text',
+      highContrast: 'Increase Contrast',
+      skipToContent: 'Skip to main content'
+    },
+    landing: {
+      eyebrow: 'Smart India Hackathon 2026 • Problem SIH26047',
+      heroTitle: 'Clinical history. Designed for human care.',
+      heroSub: 'A self-service clinical intake and triage system engineered for the All India Institute of Ayurveda and high-volume outpatient hospitals.',
+      ctaPrimary: 'Start Clinical Intake',
+      ctaSecondary: 'Explore Physician Workspace',
+      stat1Label: 'Patient Lookup Speedup',
+      stat1Sub: 'Compound ESR B-tree index over 100,000 clinical cases.',
+      stat2Label: 'Docs Examined on Covered Triage',
+      stat2Sub: 'Satisfied entirely from in-memory index keys.',
+      stat3Label: 'Consultation Time Reclaimed',
+      stat3Sub: 'Pre-structured HPI and Dashavidha Pariksha before entry.',
+      journeyHeader: 'Five steps from arrival to clinical clarity.',
+      bentoHeader: 'Built on intelligent NoSQL architecture.'
+    },
+    auth: {
+      welcomeBack: 'Sign in to MediKiosk',
+      createAccount: 'Create your MediKiosk ID',
+      subtitle: 'Access your clinical records, physician workspace, or emergency triage console.',
+      emailLabel: 'Email address',
+      passwordLabel: 'Password',
+      nameLabel: 'Full Name',
+      abhaLabel: 'ABHA ID (Optional, XX-XXXX-XXXX-XXXX)',
+      ageLabel: 'Age',
+      sexLabel: 'Biological Sex',
+      addressLabel: 'Residential City & State',
+      signInBtn: 'Continue',
+      registerBtn: 'Create Account',
+      switchToRegister: 'New patient? Create an account',
+      switchToLogin: 'Already have an account? Sign in',
+      demoHeader: 'Instant Demo Credentials'
+    },
+    patient: {
+      tabs: {
+        interview: 'Clinical Interview',
+        documents: 'Medical Documents',
+        timeline: 'Health Timeline',
+        consent: 'Privacy & Consent'
+      },
+      modeAllopathic: 'Allopathic Intake',
+      modeAyush: 'Ayush (Dashavidha Pariksha)',
+      autosaveSaving: 'Saving draft...',
+      autosaveSaved: 'Draft saved',
+      voiceStart: 'Dictate with Voice',
+      voiceListening: 'Listening...',
+      voiceUnsupported: 'Voice dictation is not supported in this browser; please use touch or keyboard.',
+      nextStep: 'Continue',
+      prevStep: 'Back',
+      reviewTitle: 'Review your clinical summary before submission',
+      submitBtn: 'Submit Case for Clinical Review',
+      consentTitle: 'Data Privacy & ABDM Consent',
+      consentSubtitle: 'Compliant with the Digital Personal Data Protection Act 2023. You control how your clinical history is captured and shared.',
+      dataCaptureTitle: 'Clinical History & Document Capture',
+      dataCaptureDesc: 'Allow MediKiosk to store your symptom interview, HPI, and uploaded lab reports for outpatient consultation.',
+      sharingTitle: 'Hospital & ABHA Health Record Sharing',
+      sharingDesc: 'Allow attending physicians and triage staff to correlate your records with your Ayushman Bharat Health Account (ABHA).',
+      consentAuditTitle: 'Timestamped Consent Ledger'
+    },
+    physician: {
+      title: 'Physician Workspace',
+      searchCases: 'Filter by complaint or patient...',
+      acceptAmend: 'Accept & Sign Off',
+      editSection: 'Edit',
+      doneEditing: 'Done',
+      auditTrail: 'Physician Amendment History',
+      shortcutsHint: 'Shortcuts: J/K navigate cases • E toggle edit • A accept & sign'
+    },
+    triage: {
+      title: 'Emergency Triage Board',
+      subtitle: 'Live priority queue ordered by clinical severity and arrival time',
+      autoRefresh: 'Live 5s Sync',
+      acknowledge: 'Acknowledge',
+      acknowledged: 'Acknowledged'
+    },
+    analytics: {
+      title: 'Clinical & NoSQL Telemetry',
+      subtitle: 'Real-time MongoDB aggregation pipelines across hospital encounters and laboratory panels'
+    }
+  },
+  hi: {
+    brand: 'मेडिकियोस्क',
+    ministryTag: 'आयुष मंत्रालय • अखिल भारतीय आयुर्वेद संस्थान (AIIA)',
+    nav: {
+      overview: 'अवलोकन',
+      journey: 'रोगी यात्रा',
+      capabilities: 'क्षमताएं',
+      patient: 'रोगी स्वास्थ्य',
+      physician: 'चिकित्सक कार्यक्षेत्र',
+      triage: 'ट्रायज बोर्ड',
+      analytics: 'विश्लेषण',
+      searchPlaceholder: 'रोगी, केस, निदान या कमांड खोजें...',
+      signIn: 'साइन इन',
+      getStarted: 'प्रारंभ करें',
+      signOut: 'साइन आउट',
+      darkMode: 'डार्क मोड',
+      lightMode: 'लाइट मोड',
+      largeText: 'बड़ा टेक्स्ट',
+      highContrast: 'उच्च कंट्रास्ट',
+      skipToContent: 'मुख्य सामग्री पर जाएं'
+    },
+    landing: {
+      eyebrow: 'स्मार्ट इंडिया हैकाथॉन २०२६ • समस्या SIH26047',
+      heroTitle: 'रोगी का सटीक इतिहास। आधुनिक चिकित्सा के लिए।',
+      heroSub: 'अखिल भारतीय आयुर्वेद संस्थान (AIIA) और उच्च-ओपीडी अस्पतालों के लिए निर्मित स्व-सेवा केस-टेकिंग और इंटेलिजेंट ट्रायज प्रणाली।',
+      ctaPrimary: 'केस दर्ज करना शुरू करें',
+      ctaSecondary: 'चिकित्सक कार्यक्षेत्र देखें',
+      stat1Label: 'रोगी खोज गति वृद्धि',
+      stat1Sub: '१,००,००० केस रिकॉर्ड्स पर कंपाउंड इंडेक्स।',
+      stat2Label: 'कवर्ड क्वेरी में जांचे गए दस्तावेज़',
+      stat2Sub: 'पूरी तरह से इन-मेमोरी इंडेक्स से प्राप्त।',
+      stat3Label: 'परामर्श समय की बचत',
+      stat3Sub: 'परामर्श कक्ष में प्रवेश से पूर्व संरचित सारांश।',
+      journeyHeader: 'आगमन से परामर्श तक के पांच सरल चरण।',
+      bentoHeader: 'इंटेलिजेंट NoSQL आर्किटेक्चर पर आधारित।'
+    },
+    auth: {
+      welcomeBack: 'मेडिकियोस्क में साइन इन करें',
+      createAccount: 'नया मेडिकियोस्क खाता बनाएं',
+      subtitle: 'अपने स्वास्थ्य रिकॉर्ड, चिकित्सक डैशबोर्ड या आपातकालीन ट्रायज कंसोल तक पहुंचें।',
+      emailLabel: 'ईमेल पता',
+      passwordLabel: 'पासवर्ड',
+      nameLabel: 'पूरा नाम',
+      abhaLabel: 'आभा आईडी (वैकल्पिक, XX-XXXX-XXXX-XXXX)',
+      ageLabel: 'आयु (वर्ष)',
+      sexLabel: 'लिंग',
+      addressLabel: 'शहर और राज्य',
+      signInBtn: 'आगे बढ़ें',
+      registerBtn: 'खाता बनाएं',
+      switchToRegister: 'नए रोगी हैं? खाता बनाएं',
+      switchToLogin: 'पहले से खाता है? साइन इन करें',
+      demoHeader: 'त्वरित डेमो लॉगिन'
+    },
+    patient: {
+      tabs: {
+        interview: 'लक्षण साक्षात्कार',
+        documents: 'चिकित्सा दस्तावेज़',
+        timeline: 'स्वास्थ्य समयरेखा',
+        consent: 'गोपनीयता और सहमति'
+      },
+      modeAllopathic: 'एलोपैथिक मोड',
+      modeAyush: 'आयुष (दशविध परीक्षा)',
+      autosaveSaving: 'प्रारूप सहेजा जा रहा है...',
+      autosaveSaved: 'प्रारूप सुरक्षित',
+      voiceStart: 'आवाज़ से लिखें',
+      voiceListening: 'सुन रहा है...',
+      voiceUnsupported: 'इस ब्राउज़र में वॉइस इनपुट उपलब्ध नहीं है; कृपया टच या कीबोर्ड का उपयोग करें।',
+      nextStep: 'आगे बढ़ें',
+      prevStep: 'पीछे जाएं',
+      reviewTitle: 'जमा करने से पहले अपने केस सारांश की समीक्षा करें',
+      submitBtn: 'चिकित्सक समीक्षा हेतु केस जमा करें',
+      consentTitle: 'डेटा गोपनीयता और ABDM सहमति',
+      consentSubtitle: 'डिजिटल व्यक्तिगत डेटा संरक्षण अधिनियम २०२३ के अनुरूप।',
+      dataCaptureTitle: 'क्लिनिकल इतिहास और दस्तावेज़ संग्रहण',
+      dataCaptureDesc: 'ओपीडी परामर्श के लिए अपने लक्षण और लैब रिपोर्ट सहेजने की अनुमति दें।',
+      sharingTitle: 'अस्पताल और आभा (ABHA) साझाकरण',
+      sharingDesc: 'चिकित्सकों और ट्रायज स्टाफ को आपके आभा खाते से रिकॉर्ड जोड़ने की अनुमति दें।',
+      consentAuditTitle: 'सहमति परिवर्तन इतिहास'
+    },
+    physician: {
+      title: 'चिकित्सक कार्यक्षेत्र',
+      searchCases: 'मुख्य शिकायत या रोगी के नाम से खोजें...',
+      acceptAmend: 'स्वीकार करें और हस्ताक्षर करें',
+      editSection: 'संपादित करें',
+      doneEditing: 'पूर्ण',
+      auditTrail: 'चिकित्सक संशोधन ऑडिट लॉग',
+      shortcutsHint: 'शॉर्टकट: J/K केस बदलें • E संपादित करें • A स्वीकार करें'
+    },
+    triage: {
+      title: 'आपातकालीन ट्रायज बोर्ड',
+      subtitle: 'गंभीरता और आगमन समय के अनुसार लाइव प्राथमिकता कतार',
+      autoRefresh: 'लाइव 5s सिंक',
+      acknowledge: 'पुष्टि करें',
+      acknowledged: 'पुष्टि की गई'
+    },
+    analytics: {
+      title: 'क्लिनिकल और NoSQL विश्लेषण',
+      subtitle: 'अस्पताल के मामलों और लैब रिपोर्टों पर लाइव MongoDB एग्रीगेशन पाइपलाइन'
+    }
+  }
+};

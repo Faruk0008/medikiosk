@@ -1,0 +1,13 @@
+{
+  "name": "medikiosk-server",
+  "version": "1.0.0",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "seed": "node src/seed/seed.js",
+    "seed:bulk": "node src/seed/seed.js --bulk 100000",
+    "benchmark": "node src/scripts/benchmark.js",
+    "test": "jest"
+  }
+}

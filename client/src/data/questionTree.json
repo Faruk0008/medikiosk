@@ -1,0 +1,149 @@
+{
+  "steps": [
+    {
+      "id": "chiefComplaint",
+      "path": "history.chiefComplaint",
+      "titleEn": "What brings you to the clinic today?",
+      "titleHi": "आज आप किस मुख्य समस्या के लिए क्लिनिक आए हैं?",
+      "subtitleEn": "Select a common presenting symptom below or describe it in your own words.",
+      "subtitleHi": "नीचे दिए गए सामान्य लक्षणों में से चुनें या अपने शब्दों में लिखें।",
+      "type": "text_with_chips",
+      "chips": [
+        "Severe retrosternal chest pain with dyspnoea",
+        "Amavata (Chronic joint stiffness and morning pain)",
+        "Sudden onset facial droop and slurred speech",
+        "Amlapitta (Epigastric burning and sour belching)",
+        "Tamaka Shwasa (Nocturnal wheezing and breathlessness)",
+        "High fever with neck stiffness",
+        "Gridhrasi (Lower back pain radiating to leg)"
+      ]
+    },
+    {
+      "id": "socrates_radiation",
+      "path": "history.hpi.radiation",
+      "condition": "chest_pain",
+      "titleEn": "SOCRATES Probe: Does the chest pain radiate anywhere?",
+      "titleHi": "SOCRATES जांच: क्या सीने का दर्द शरीर के किसी अन्य हिस्से में फैल रहा है?",
+      "subtitleEn": "Because you reported chest pain, we ask targeted cardiac follow-ups.",
+      "subtitleHi": "सीने में दर्द की स्थिति में यह जानकारी तत्काल कार्डियक ट्रायज के लिए आवश्यक है।",
+      "type": "text_with_chips",
+      "chips": [
+        "Left arm, shoulder, and jaw",
+        "Through to the interscapular back",
+        "Neck and epigastrium",
+        "No radiation (localized to sternum)"
+      ]
+    },
+    {
+      "id": "hpi_site_onset",
+      "path": "history.hpi.site",
+      "secondaryPath": "history.hpi.onset",
+      "titleEn": "Where is the symptom located, and when did it begin?",
+      "titleHi": "यह समस्या शरीर के किस भाग में है और कब शुरू हुई?",
+      "subtitleEn": "Specify anatomical location and onset duration.",
+      "subtitleHi": "प्रभावित स्थान और अवधि का चयन करें।",
+      "type": "dual_text_chips",
+      "chips": [
+        "Central chest • Sudden onset 1 hour ago",
+        "Bilateral knee & wrist joints • Gradual over 4 months",
+        "Epigastrium • 2 weeks after heavy meals",
+        "Right face and upper limb • Acute 45 minutes ago",
+        "Lumbar spine (Kati Pradesha) • 3 weeks"
+      ]
+    },
+    {
+      "id": "hpi_associations",
+      "path": "history.hpi.associations",
+      "titleEn": "Are you experiencing any associated symptoms?",
+      "titleHi": "क्या इसके साथ कोई अन्य लक्षण भी महसूस हो रहे हैं?",
+      "subtitleEn": "Associated symptoms help our Red-Flag Engine detect acute emergencies.",
+      "subtitleHi": "संबद्ध लक्षण आपातकालीन स्थिति की पहचान करने में मदद करते हैं।",
+      "type": "text_with_chips",
+      "chips": [
+        "Shortness of breath (dyspnoea) and profuse sweating",
+        "Morning stiffness lasting over 45 minutes and low appetite",
+        "Limb weakness and slurred speech",
+        "Neck stiffness, photophobia, and confusion",
+        "Sour eructation and nausea",
+        "None"
+      ]
+    },
+    {
+      "id": "hpi_severity",
+      "path": "history.hpi.severity",
+      "titleEn": "How severe is your discomfort right now?",
+      "titleHi": "अभी आपकी परेशानी या दर्द की तीव्रता कितनी है?",
+      "subtitleEn": "Slide from 1 (mild discomfort) to 10 (worst imaginable severity).",
+      "subtitleHi": "१ (हल्का) से १० (असहनीय) के पैमाने पर चुनें।",
+      "type": "severity_slider"
+    },
+    {
+      "id": "past_allergy",
+      "path": "history.pastMedicalSurgical",
+      "secondaryPath": "history.drugAllergy",
+      "titleEn": "Do you have any past medical conditions or drug allergies?",
+      "titleHi": "क्या आपको पहले से कोई बीमारी या दवा से एलर्जी है?",
+      "subtitleEn": "Separate multiple entries with commas.",
+      "subtitleHi": "एक से अधिक होने पर अल्पविराम (,) लगाएं।",
+      "type": "past_and_allergy",
+      "chips": [
+        "Hypertension, Type 2 Diabetes Mellitus",
+        "Bronchial Asthma",
+        "Peptic Ulcer Disease",
+        "Hypothyroidism",
+        "No prior chronic illness"
+      ],
+      "allergyChips": [
+        "Penicillin / Beta-lactams",
+        "Sulfa drugs",
+        "NSAIDs / Ibuprofen",
+        "No known drug allergies"
+      ]
+    },
+    {
+      "id": "ayush_prakriti_vikriti",
+      "path": "history.dashavidhaPariksha.prakriti",
+      "secondaryPath": "history.dashavidhaPariksha.vikriti",
+      "condition": "ayush_mode",
+      "titleEn": "Dashavidha Pariksha I: Prakriti & Vikriti Assessment",
+      "titleHi": "दशविध परीक्षा १: प्रकृति और विकृति मूल्यांकन",
+      "subtitleEn": "Constitutional phenotype (Prakriti) and current doshic imbalance (Vikriti).",
+      "subtitleHi": "जन्मजात दोष प्रकृति और वर्तमान दोष विकृति का चयन करें।",
+      "type": "ayush_pair",
+      "chips": [
+        "Vata-Pitta Prakriti",
+        "Vata-Kapha Prakriti",
+        "Pitta-Kapha Prakriti",
+        "Sama Doshaja"
+      ],
+      "secondaryChips": [
+        "Tridoshaja with Ama predominance",
+        "Vata Prakopa (Asthi-Sandhi)",
+        "Pitta Vriddhi (Annavaha Srotas)",
+        "Kapha-Vata Sanga (Pranavaha Srotas)"
+      ]
+    },
+    {
+      "id": "ayush_agni_koshtha",
+      "path": "history.dashavidhaPariksha.aharaShakti",
+      "secondaryPath": "history.dashavidhaPariksha.sattva",
+      "condition": "ayush_mode",
+      "titleEn": "Dashavidha Pariksha II: Ahara Shakti (Agni) & Sattva",
+      "titleHi": "दशविध परीक्षा २: आहार शक्ति (अग्नि) और सत्त्व बल",
+      "subtitleEn": "Digestive/metabolic capacity (Abhyavaharana & Jarana) and mental resilience.",
+      "subtitleHi": "पाचन क्षमता (अग्नि) और मानसिक बल का विवरण।",
+      "type": "ayush_pair",
+      "chips": [
+        "Mandagni (Low digestive capacity, coated tongue)",
+        "Tikshnagni (Hyper-metabolic with burning)",
+        "Vishamagni (Irregular digestion with bloating)",
+        "Samagni (Balanced digestion)"
+      ],
+      "secondaryChips": [
+        "Pravara Sattva (High mental resilience)",
+        "Madhyama Sattva (Moderate resilience)",
+        "Avara Sattva (Sensitive to pain and stress)"
+      ]
+    }
+  ]
+}

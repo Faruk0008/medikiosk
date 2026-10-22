@@ -1,0 +1,207 @@
+{
+  "version": "1.0.0",
+  "rules": [
+    {
+      "ruleId": "RF_ACS_01",
+      "code": "CARDIO_DYSPNOEA",
+      "name": "Suspected Acute Coronary Syndrome (Chest Pain + Dyspnoea/Radiation)",
+      "category": "Cardiovascular",
+      "severity": "critical",
+      "priorityBoost": 45,
+      "matchType": "compound_and",
+      "primaryKeywords": [
+        "chest pain",
+        "retrosternal pain",
+        "precordial pain",
+        "chest tightness",
+        "heaviness in chest",
+        "hridshoola"
+      ],
+      "secondaryKeywords": [
+        "dyspnoea",
+        "dyspnea",
+        "shortness of breath",
+        "breathlessness",
+        "sweating",
+        "diaphoresis",
+        "left arm",
+        "jaw pain",
+        "shwasa"
+      ],
+      "rationale": "Concurrent chest pain and dyspnoea/autonomic symptoms or radiation indicates potential Acute Coronary Syndrome requiring immediate ECG and triage."
+    },
+    {
+      "ruleId": "RF_STROKE_02",
+      "code": "NEURO_FAST_STROKE",
+      "name": "Acute Neurological Deficit / Stroke Signs (FAST)",
+      "category": "Neurological",
+      "severity": "critical",
+      "priorityBoost": 50,
+      "matchType": "any",
+      "keywords": [
+        "facial droop",
+        "slurred speech",
+        "limb weakness",
+        "hemiparesis",
+        "hemiplegia",
+        "pakshaghata",
+        "sudden numbness",
+        "inability to speak",
+        "aphasia",
+        "one-sided weakness"
+      ],
+      "rationale": "Focal neurological deficits (facial droop, slurred speech, limb weakness / Pakshaghata) require immediate stroke protocol activation."
+    },
+    {
+      "ruleId": "RF_HEMORRHAGE_03",
+      "code": "HEMORRHAGE_SHOCK",
+      "name": "Severe Active Bleeding / Hemorrhagic Warning",
+      "category": "Hematological / Trauma",
+      "severity": "critical",
+      "priorityBoost": 45,
+      "matchType": "any",
+      "keywords": [
+        "severe bleeding",
+        "uncontrolled bleeding",
+        "hematemesis",
+        "vomiting blood",
+        "hemoptysis",
+        "coughing blood",
+        "melena",
+        "profuse bleeding",
+        "raktapitta"
+      ],
+      "rationale": "Active severe bleeding or gastrointestinal/respiratory hemorrhage risks hypovolemic shock and hemodynamic instability."
+    },
+    {
+      "ruleId": "RF_ANAPHYLAXIS_04",
+      "code": "ALLERGY_ANAPHYLAXIS",
+      "name": "Suspected Anaphylaxis / Airway Compromise",
+      "category": "Immunological / Airway",
+      "severity": "critical",
+      "priorityBoost": 50,
+      "matchType": "any",
+      "keywords": [
+        "anaphylaxis",
+        "tongue swelling",
+        "throat swelling",
+        "stridor",
+        "airway obstruction",
+        "hives with breathing difficulty",
+        "angioedema",
+        "difficulty swallowing with wheezing"
+      ],
+      "rationale": "Signs of upper airway edema, stridor, or systemic anaphylaxis demand immediate airway protection and epinephrine."
+    },
+    {
+      "ruleId": "RF_SEPSIS_MENINGISM_05",
+      "code": "INFECT_MENINGISM",
+      "name": "High Fever with Altered Sensorium / Meningism",
+      "category": "Infectious / CNS",
+      "severity": "high",
+      "priorityBoost": 35,
+      "matchType": "compound_and",
+      "primaryKeywords": [
+        "high fever",
+        "hyperpyrexia",
+        "severe fever",
+        "sannipata jwara",
+        "fever"
+      ],
+      "secondaryKeywords": [
+        "neck stiffness",
+        "altered sensorium",
+        "confusion",
+        "delirium",
+        "photophobia",
+        "seizure",
+        "unresponsive",
+        "murchha"
+      ],
+      "rationale": "Fever accompanied by meningeal signs or altered consciousness raises suspicion for CNS infection or sepsis."
+    },
+    {
+      "ruleId": "RF_SEVERE_PAIN_06",
+      "code": "CRITICAL_PAIN_SCORE",
+      "name": "Extreme Pain Severity Score (VAS >= 9/10)",
+      "category": "General Triage",
+      "severity": "high",
+      "priorityBoost": 25,
+      "matchType": "severity_threshold",
+      "minSeverity": 9,
+      "rationale": "Patient reported pain severity >= 9/10 on HPI Visual Analog Scale requires rapid analgesic and diagnostic triage."
+    }
+  ],
+  "standardLabRanges": {
+    "hemoglobin": {
+      "min": 12,
+      "max": 17.5,
+      "criticalLow": 7,
+      "criticalHigh": 20,
+      "unit": "g/dL"
+    },
+    "wbc": {
+      "min": 4000,
+      "max": 11000,
+      "criticalLow": 2000,
+      "criticalHigh": 25000,
+      "unit": "/mcL"
+    },
+    "platelets": {
+      "min": 150000,
+      "max": 450000,
+      "criticalLow": 50000,
+      "criticalHigh": 1000000,
+      "unit": "/mcL"
+    },
+    "fasting blood sugar": {
+      "min": 70,
+      "max": 100,
+      "criticalLow": 50,
+      "criticalHigh": 300,
+      "unit": "mg/dL"
+    },
+    "hba1c": {
+      "min": 4,
+      "max": 5.6,
+      "criticalLow": 3.5,
+      "criticalHigh": 10,
+      "unit": "%"
+    },
+    "creatinine": {
+      "min": 0.6,
+      "max": 1.2,
+      "criticalLow": 0.2,
+      "criticalHigh": 4,
+      "unit": "mg/dL"
+    },
+    "potassium": {
+      "min": 3.5,
+      "max": 5.1,
+      "criticalLow": 2.8,
+      "criticalHigh": 6,
+      "unit": "mEq/L"
+    },
+    "sodium": {
+      "min": 135,
+      "max": 145,
+      "criticalLow": 125,
+      "criticalHigh": 155,
+      "unit": "mEq/L"
+    },
+    "esr": {
+      "min": 0,
+      "max": 20,
+      "criticalLow": 0,
+      "criticalHigh": 80,
+      "unit": "mm/hr"
+    },
+    "troponin-i": {
+      "min": 0,
+      "max": 0.04,
+      "criticalLow": 0,
+      "criticalHigh": 0.4,
+      "unit": "ng/mL"
+    }
+  }
+}
