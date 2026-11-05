@@ -20,9 +20,9 @@ export function Button({
     ghost: 'bg-transparent hover:bg-apple-bgSecondary text-apple-text'
   };
   const sizes = {
-    sm: 'h-9 px-4 text-xs font-medium',
-    md: 'h-11 px-6 text-sm font-medium',
-    lg: 'h-12 px-8 text-base font-medium'
+    sm: 'h-9 min-h-[36px] px-3.5 text-xs font-medium',
+    md: 'h-11 min-h-[44px] px-5 sm:px-6 text-sm font-medium',
+    lg: 'h-12 min-h-[48px] px-6 sm:px-8 text-base font-medium'
   };
 
   return (
@@ -33,7 +33,7 @@ export function Button({
       disabled={disabled}
       onClick={onClick}
       className={clsx(
-        'inline-flex items-center justify-center gap-2 rounded-full transition-colors select-none disabled:opacity-40 disabled:pointer-events-none',
+        'inline-flex items-center justify-center gap-2 rounded-full transition-colors select-none disabled:opacity-40 disabled:pointer-events-none touch-manipulation',
         variants[variant] || variants.primary,
         sizes[size] || sizes.md,
         className
@@ -49,7 +49,7 @@ export function Card({ children, className = '', elevated = false, ...rest }) {
   return (
     <div
       className={clsx(
-        'rounded-[24px] hairline-border shadow-apple transition-shadow',
+        'rounded-[20px] sm:rounded-[24px] hairline-border shadow-apple transition-shadow',
         elevated ? 'bg-apple-surfaceElevated' : 'bg-apple-surface',
         className
       )}
@@ -65,7 +65,7 @@ export function Segmented({ options = [], value, onChange, className = '', idPre
     <div
       role="tablist"
       className={clsx(
-        'inline-flex items-center p-1 rounded-full bg-apple-bgSecondary hairline-border',
+        'inline-flex items-center p-1 rounded-full bg-apple-bgSecondary hairline-border max-w-full overflow-x-auto no-scrollbar',
         className
       )}
     >
@@ -79,7 +79,7 @@ export function Segmented({ options = [], value, onChange, className = '', idPre
             aria-selected={active}
             onClick={() => onChange(opt.value)}
             className={clsx(
-              'relative px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-colors z-10',
+              'relative min-h-[36px] px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-colors z-10 shrink-0 whitespace-nowrap',
               active ? 'text-apple-text' : 'text-apple-textSecondary hover:text-apple-text'
             )}
           >
@@ -105,7 +105,7 @@ export function Chip({ children, active = false, onClick, className = '' }) {
       type="button"
       onClick={onClick}
       className={clsx(
-        'px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all hairline-border',
+        'min-h-[38px] px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all hairline-border touch-manipulation',
         active
           ? 'bg-[#0071e3] text-white border-[#0071e3]'
           : 'bg-apple-surface hover:bg-apple-bgSecondary text-apple-text',
@@ -119,8 +119,8 @@ export function Chip({ children, active = false, onClick, className = '' }) {
 
 export function Toggle({ checked, onChange, label, description, disabled = false }) {
   return (
-    <div className="flex items-start justify-between gap-4 py-3">
-      <div className="space-y-1">
+    <div className="flex items-start justify-between gap-4 py-2.5 sm:py-3">
+      <div className="space-y-0.5 sm:space-y-1">
         {label && <p className="text-sm sm:text-base font-semibold text-apple-text">{label}</p>}
         {description && <p className="text-xs sm:text-sm text-apple-textSecondary max-w-xl">{description}</p>}
       </div>
@@ -131,14 +131,14 @@ export function Toggle({ checked, onChange, label, description, disabled = false
         disabled={disabled}
         onClick={() => onChange(!checked)}
         className={clsx(
-          'relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full p-0.5 transition-colors duration-200 ease-in-out disabled:opacity-40',
+          'relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full p-0.5 transition-colors duration-200 ease-in-out disabled:opacity-40 touch-manipulation',
           checked ? 'bg-[#34c759]' : 'bg-[#d2d2d7] dark:bg-[#38383a]'
         )}
       >
         <motion.span
           animate={{ x: checked ? 20 : 0 }}
           transition={{ type: 'spring', stiffness: 500, damping: 32 }}
-          className="inline-block h-6 w-6 rounded-full bg-white shadow-md"
+          className="inline-block h-6 w-6 rounded-full bg-white shadow-md pointer-events-none"
         />
       </button>
     </div>
@@ -162,7 +162,7 @@ export function Input({
     <div className={clsx('w-full', className)}>
       <div
         className={clsx(
-          'relative rounded-[16px] bg-apple-surface hairline-border px-4 pt-5 pb-2 transition-all',
+          'relative rounded-[16px] bg-apple-surface hairline-border px-4 pt-5 pb-2 transition-all min-h-[52px]',
           focused && 'ring-2 ring-[#0071e3] border-transparent',
           error && 'border-[#ff3b30] ring-1 ring-[#ff3b30]'
         )}
@@ -170,10 +170,10 @@ export function Input({
         {label && (
           <label
             className={clsx(
-              'pointer-events-none absolute left-4 transition-all duration-150',
+              'pointer-events-none absolute left-4 transition-all duration-150 select-none',
               floated
                 ? 'top-1.5 text-[11px] font-medium text-apple-textSecondary'
-                : 'top-3.5 text-sm text-apple-textSecondary'
+                : 'top-3.5 text-sm sm:text-base text-apple-textSecondary'
             )}
           >
             {label}
@@ -186,7 +186,7 @@ export function Input({
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           required={required}
-          className="w-full bg-transparent text-sm sm:text-base text-apple-text focus:outline-none"
+          className="w-full bg-transparent text-[16px] sm:text-base text-apple-text focus:outline-none"
           {...rest}
         />
       </div>
@@ -207,10 +207,19 @@ export function Skeleton({ className = '' }) {
 }
 
 export function Sheet({ open, onClose, title, children }) {
+  useEffect(() => {
+    if (!open) return;
+    const onKey = e => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, onClose]);
+
   return (
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 z-50 flex justify-end">
+        <div className="fixed inset-0 z-50 flex justify-end max-sm:items-end">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -219,25 +228,25 @@ export function Sheet({ open, onClose, title, children }) {
             className="fixed inset-0 bg-black/40 backdrop-blur-sm"
           />
           <motion.div
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
+            initial={{ x: '100%', y: 0 }}
+            animate={{ x: 0, y: 0 }}
+            exit={{ x: '100%', y: 0 }}
             transition={{ type: 'spring', stiffness: 360, damping: 34 }}
-            className="relative z-10 w-full max-w-lg bg-apple-surface h-full shadow-appleModal hairline-border p-6 overflow-y-auto flex flex-col justify-between"
+            className="relative z-10 w-full max-w-lg bg-apple-surface h-full max-sm:h-auto max-sm:max-h-[88vh] max-sm:rounded-t-[28px] max-sm:rounded-b-none shadow-appleModal hairline-border p-5 sm:p-6 overflow-y-auto flex flex-col justify-between"
           >
             <div>
               <div className="flex items-center justify-between pb-4 hairline-b">
-                <h3 className="text-lg font-semibold tracking-tightHeading text-apple-text">{title}</h3>
+                <h3 className="text-base sm:text-lg font-semibold tracking-tightHeading text-apple-text">{title}</h3>
                 <button
                   type="button"
                   onClick={onClose}
                   aria-label="Close panel"
-                  className="p-2 rounded-full hover:bg-apple-bgSecondary text-apple-textSecondary"
+                  className="p-2 min-h-[44px] min-w-[44px] rounded-full hover:bg-apple-bgSecondary text-apple-textSecondary flex items-center justify-center"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <div className="mt-6">{children}</div>
+              <div className="mt-5">{children}</div>
             </div>
           </motion.div>
         </div>
@@ -247,10 +256,19 @@ export function Sheet({ open, onClose, title, children }) {
 }
 
 export function Modal({ open, onClose, title, children }) {
+  useEffect(() => {
+    if (!open) return;
+    const onKey = e => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, onClose]);
+
   return (
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 max-sm:items-end">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -263,20 +281,20 @@ export function Modal({ open, onClose, title, children }) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 12 }}
             transition={{ type: 'spring', stiffness: 420, damping: 30 }}
-            className="relative z-10 w-full max-w-xl rounded-[28px] bg-apple-surface hairline-border shadow-appleModal p-6 sm:p-8"
+            className="relative z-10 w-full max-w-xl rounded-[24px] sm:rounded-[28px] max-sm:rounded-b-none bg-apple-surface hairline-border shadow-appleModal p-5 sm:p-8 max-h-[90vh] overflow-y-auto"
           >
-            <div className="flex items-center justify-between pb-4 hairline-b">
-              <h3 className="text-lg font-semibold tracking-tightHeading text-apple-text">{title}</h3>
+            <div className="flex items-center justify-between pb-3.5 sm:pb-4 hairline-b">
+              <h3 className="text-base sm:text-lg font-semibold tracking-tightHeading text-apple-text">{title}</h3>
               <button
                 type="button"
                 onClick={onClose}
                 aria-label="Close modal"
-                className="p-1.5 rounded-full hover:bg-apple-bgSecondary text-apple-textSecondary"
+                className="p-1.5 min-h-[44px] min-w-[44px] rounded-full hover:bg-apple-bgSecondary text-apple-textSecondary flex items-center justify-center"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="mt-5">{children}</div>
+            <div className="mt-4 sm:mt-5">{children}</div>
           </motion.div>
         </div>
       )}

@@ -113,15 +113,15 @@ export default function LandingPage() {
   const StepIcon = currentStepObj.icon;
 
   return (
-    <div className="bg-apple-bg text-apple-text">
+    <div className="bg-apple-bg text-apple-text overflow-x-hidden">
       {/* Hero Section */}
-      <section id="overview" className="py-24 sm:py-36 px-4 sm:px-6">
+      <section id="overview" className="py-20 sm:py-32 md:py-36 px-4 sm:px-6">
         <div className="max-w-apple mx-auto text-center">
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="text-xs sm:text-sm font-semibold uppercase tracking-widest text-[#0071e3] mb-4"
+            className="text-xs sm:text-sm font-semibold uppercase tracking-widest text-[#0071e3] mb-3 sm:mb-4"
           >
             {t('landing.eyebrow')}
           </motion.p>
@@ -129,7 +129,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.05 }}
-            className="text-4xl sm:text-6xl md:text-[72px] font-semibold tracking-tightHero leading-[1.06] max-w-4xl mx-auto"
+            className="text-[clamp(2.25rem,6vw+0.5rem,4.5rem)] font-semibold tracking-tightHero leading-[1.06] max-w-4xl mx-auto"
           >
             {t('landing.heroTitle')}
           </motion.h1>
@@ -137,7 +137,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.12 }}
-            className="mt-6 text-lg sm:text-xl text-apple-textSecondary max-w-2xl mx-auto font-normal leading-relaxed"
+            className="mt-5 sm:mt-6 text-base sm:text-xl text-apple-textSecondary max-w-2xl mx-auto font-normal leading-relaxed px-2"
           >
             {t('landing.heroSub')}
           </motion.p>
@@ -145,9 +145,9 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.18 }}
-            className="mt-10 flex flex-wrap items-center justify-center gap-4"
+            className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3.5 sm:gap-4 max-w-xs sm:max-w-none mx-auto"
           >
-            <Button size="lg" onClick={handlePrimaryAction}>
+            <Button size="lg" onClick={handlePrimaryAction} className="w-full sm:w-auto">
               <span>{t('landing.ctaPrimary')}</span>
               <ArrowRight className="w-4 h-4" />
             </Button>
@@ -155,6 +155,7 @@ export default function LandingPage() {
               variant="secondary"
               size="lg"
               onClick={() => navigate(user ? '/app/physician' : '/login')}
+              className="w-full sm:w-auto"
             >
               {t('landing.ctaSecondary')}
             </Button>
@@ -163,74 +164,101 @@ export default function LandingPage() {
       </section>
 
       {/* Big Stat Band */}
-      <section className="py-20 bg-apple-bgSecondary hairline-t hairline-b px-4 sm:px-6">
-        <div className="max-w-apple mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
-          <div className="space-y-2">
-            <p className="text-5xl sm:text-6xl font-semibold tracking-tightHero text-apple-text">
+      <section className="py-14 sm:py-20 bg-apple-bgSecondary hairline-t hairline-b px-4 sm:px-6">
+        <div className="max-w-apple mx-auto grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-10 text-center sm:text-left">
+          <div className="space-y-1.5 sm:space-y-2">
+            <p className="text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tightHero text-apple-text">
               <AnimatedNumber value={140.3} decimals={1} suffix="x" />
             </p>
-            <p className="text-base font-semibold text-apple-text">{t('landing.stat1Label')}</p>
-            <p className="text-sm text-apple-textSecondary">{t('landing.stat1Sub')}</p>
+            <p className="text-sm sm:text-base font-semibold text-apple-text">{t('landing.stat1Label')}</p>
+            <p className="text-xs sm:text-sm text-apple-textSecondary">{t('landing.stat1Sub')}</p>
           </div>
-          <div className="space-y-2">
-            <p className="text-5xl sm:text-6xl font-semibold tracking-tightHero text-[#0071e3]">
+          <div className="space-y-1.5 sm:space-y-2">
+            <p className="text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tightHero text-[#0071e3]">
               <AnimatedNumber value={0} decimals={0} />
             </p>
-            <p className="text-base font-semibold text-apple-text">{t('landing.stat2Label')}</p>
-            <p className="text-sm text-apple-textSecondary">{t('landing.stat2Sub')}</p>
+            <p className="text-sm sm:text-base font-semibold text-apple-text">{t('landing.stat2Label')}</p>
+            <p className="text-xs sm:text-sm text-apple-textSecondary">{t('landing.stat2Sub')}</p>
           </div>
-          <div className="space-y-2">
-            <p className="text-5xl sm:text-6xl font-semibold tracking-tightHero text-[#34c759]">
+          <div className="space-y-1.5 sm:space-y-2">
+            <p className="text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tightHero text-[#34c759]">
               <AnimatedNumber value={78} decimals={0} suffix="%" />
             </p>
-            <p className="text-base font-semibold text-apple-text">{t('landing.stat3Label')}</p>
-            <p className="text-sm text-apple-textSecondary">{t('landing.stat3Sub')}</p>
+            <p className="text-sm sm:text-base font-semibold text-apple-text">{t('landing.stat3Label')}</p>
+            <p className="text-xs sm:text-sm text-apple-textSecondary">{t('landing.stat3Sub')}</p>
           </div>
         </div>
       </section>
 
-      {/* Sticky Scroll 5-Step Patient Journey */}
-      <section id="journey" className="py-28 px-4 sm:px-6">
+      {/* 5-Step Patient Journey (Stacked on Mobile, Sticky on Desktop) */}
+      <section id="journey" className="py-20 sm:py-28 px-4 sm:px-6">
         <div className="max-w-apple mx-auto">
-          <div className="max-w-2xl mb-16">
+          <div className="max-w-2xl mb-12 sm:mb-16">
             <p className="text-xs font-semibold uppercase tracking-widest text-[#0071e3] mb-2">
               End-to-End Clinical Flow
             </p>
-            <h2 className="text-3xl sm:text-5xl font-semibold tracking-tightHeading">
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-semibold tracking-tightHeading">
               {t('landing.journeyHeader')}
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-            <div className="lg:col-span-6 space-y-24">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
+            {/* Step Descriptions */}
+            <div className="lg:col-span-6 space-y-12 sm:space-y-20">
               {JOURNEY_STEPS.map((item, idx) => {
                 const active = idx === activeStep;
+                const Icon = item.icon;
                 return (
                   <div
                     key={item.id}
                     data-journey-index={idx}
                     onClick={() => setActiveStep(idx)}
                     className={`cursor-pointer transition-opacity duration-300 ${
-                      active ? 'opacity-100' : 'opacity-40 hover:opacity-70'
+                      active ? 'opacity-100' : 'opacity-40 hover:opacity-75'
                     }`}
                   >
-                    <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#0071e3] mb-3">
+                    <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#0071e3] mb-2 sm:mb-3">
                       <span>Step {item.step}</span>
                       <span>•</span>
                       <span>{item.label}</span>
                     </div>
-                    <h3 className="text-2xl sm:text-3xl font-semibold tracking-tightHeading mb-3">
+                    <h3 className="text-xl sm:text-2xl md:text-3xl font-semibold tracking-tightHeading mb-2 sm:mb-3">
                       {item.title}
                     </h3>
-                    <p className="text-base text-apple-textSecondary leading-relaxed">
+                    <p className="text-sm sm:text-base text-apple-textSecondary leading-relaxed">
                       {item.description}
                     </p>
+
+                    {/* Mobile-only inline preview card */}
+                    <div className="block lg:hidden mt-5">
+                      <Card className="p-5 bg-apple-bgSecondary space-y-3">
+                        <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-apple-textSecondary">
+                          <span>{item.previewTitle}</span>
+                          <Icon className="w-4 h-4 text-[#0071e3]" />
+                        </div>
+                        <p className="text-base sm:text-lg font-semibold text-apple-text">
+                          {item.previewMetric}
+                        </p>
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                          {item.previewPills.map(pill => (
+                            <span
+                              key={pill}
+                              className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-apple-surface text-apple-text hairline-border"
+                            >
+                              <CheckCircle2 className="w-3 h-3 text-[#34c759]" />
+                              {pill}
+                            </span>
+                          ))}
+                        </div>
+                      </Card>
+                    </div>
                   </div>
                 );
               })}
             </div>
 
-            <div className="lg:col-span-6 lg:sticky lg:top-24">
+            {/* Desktop Sticky Preview Card */}
+            <div className="hidden lg:block lg:col-span-6 lg:sticky lg:top-24">
               <Card className="p-8 sm:p-10 min-h-[360px] flex flex-col justify-between bg-apple-bgSecondary">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-mono uppercase tracking-wider text-apple-textSecondary">
@@ -278,29 +306,29 @@ export default function LandingPage() {
       </section>
 
       {/* Bento Grid of Capabilities */}
-      <section id="capabilities" className="py-28 bg-apple-bgSecondary hairline-t px-4 sm:px-6">
+      <section id="capabilities" className="py-20 sm:py-28 bg-apple-bgSecondary hairline-t px-4 sm:px-6">
         <div className="max-w-apple mx-auto">
-          <div className="max-w-2xl mb-14">
+          <div className="max-w-2xl mb-10 sm:mb-14">
             <p className="text-xs font-semibold uppercase tracking-widest text-[#0071e3] mb-2">
               CSE494 NoSQL Architecture
             </p>
-            <h2 className="text-3xl sm:text-5xl font-semibold tracking-tightHeading">
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-semibold tracking-tightHeading">
               {t('landing.bentoHeader')}
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-            <Card className="md:col-span-7 p-8 sm:p-10 flex flex-col justify-between">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-5 sm:gap-6">
+            <Card className="lg:col-span-7 p-6 sm:p-10 flex flex-col justify-between">
               <div className="space-y-3">
                 <Database className="w-6 h-6 text-[#0071e3]" />
-                <h3 className="text-2xl font-semibold tracking-tightHeading">
+                <h3 className="text-xl sm:text-2xl font-semibold tracking-tightHeading">
                   Polymorphic Clinical Document Model
                 </h3>
                 <p className="text-sm sm:text-base text-apple-textSecondary leading-relaxed">
                   Allopathic HPI and Ayurvedic ten-fold Dashavidha Pariksha coexist in a single collection with embedded history, redFlags, and physicianEdits—enforced at the storage engine layer via MongoDB $jsonSchema.
                 </p>
               </div>
-              <div className="mt-8 pt-6 hairline-t flex flex-wrap gap-3 text-xs font-mono text-apple-textSecondary">
+              <div className="mt-6 sm:mt-8 pt-5 sm:pt-6 hairline-t flex flex-wrap gap-2 sm:gap-3 text-xs font-mono text-apple-textSecondary">
                 <span>Embedded 1:1 History</span>
                 <span>•</span>
                 <span>Referenced 1:N Documents</span>
@@ -309,47 +337,47 @@ export default function LandingPage() {
               </div>
             </Card>
 
-            <div className="md:col-span-5 rounded-[24px] bg-[#1d1d1f] text-[#f5f5f7] p-8 sm:p-10 flex flex-col justify-between shadow-apple">
+            <div className="lg:col-span-5 rounded-[20px] sm:rounded-[24px] bg-[#1d1d1f] text-[#f5f5f7] p-6 sm:p-10 flex flex-col justify-between shadow-apple">
               <div className="space-y-3">
                 <AlertTriangle className="w-6 h-6 text-[#ff3b30]" />
-                <h3 className="text-2xl font-semibold tracking-tightHeading">
+                <h3 className="text-xl sm:text-2xl font-semibold tracking-tightHeading">
                   Clinical Red-Flag Engine
                 </h3>
                 <p className="text-sm text-[#98989d] leading-relaxed">
                   Automatically detects Acute Coronary Syndrome, Stroke FAST deficits, Hemorrhage, Anaphylaxis, Meningism, and critical lab values the moment a case is submitted.
                 </p>
               </div>
-              <div className="mt-8 pt-6 border-t border-white/10 text-xs font-mono text-[#ff9f0a]">
+              <div className="mt-6 sm:mt-8 pt-5 sm:pt-6 border-t border-white/10 text-xs font-mono text-[#ff9f0a]">
                 Priority Queue • {'{ status: 1, priority: -1, createdAt: 1 }'}
               </div>
             </div>
 
-            <Card className="md:col-span-5 p-8 sm:p-10 flex flex-col justify-between">
+            <Card className="lg:col-span-5 p-6 sm:p-10 flex flex-col justify-between">
               <div className="space-y-3">
                 <ShieldCheck className="w-6 h-6 text-[#34c759]" />
-                <h3 className="text-xl font-semibold tracking-tightHeading">
+                <h3 className="text-lg sm:text-xl font-semibold tracking-tightHeading">
                   DPDP Act 2023 Consent Ledger
                 </h3>
                 <p className="text-sm text-apple-textSecondary leading-relaxed">
                   Every consent toggle writes a timestamped audit entry. Revoking data capture immediately blocks new clinical intake.
                 </p>
               </div>
-              <div className="mt-6 text-xs text-apple-textSecondary font-mono">
+              <div className="mt-5 text-xs text-apple-textSecondary font-mono">
                 GET /api/consent-history/:patientId
               </div>
             </Card>
 
-            <Card className="md:col-span-7 p-8 sm:p-10 flex flex-col justify-between">
+            <Card className="lg:col-span-7 p-6 sm:p-10 flex flex-col justify-between">
               <div className="space-y-3">
                 <Gauge className="w-6 h-6 text-[#0071e3]" />
-                <h3 className="text-xl font-semibold tracking-tightHeading">
+                <h3 className="text-lg sm:text-xl font-semibold tracking-tightHeading">
                   Covered Queries & Multi-Stage Aggregations
                 </h3>
                 <p className="text-sm text-apple-textSecondary leading-relaxed">
                   Live hospital telemetry powered by $group, $dateToString, $unwind, $lookup, and $unionWith pipelines—plus covered index queries examining zero collection documents.
                 </p>
               </div>
-              <div className="mt-6 text-xs text-apple-textSecondary font-mono">
+              <div className="mt-5 text-xs text-apple-textSecondary font-mono">
                 PROJECTION_COVERED • totalDocsExamined: 0
               </div>
             </Card>
@@ -358,8 +386,8 @@ export default function LandingPage() {
       </section>
 
       {/* Minimal Footer */}
-      <footer className="py-12 px-4 sm:px-6 hairline-t text-xs text-apple-textSecondary">
-        <div className="max-w-apple mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <footer className="py-10 sm:py-12 px-4 sm:px-6 hairline-t text-xs text-apple-textSecondary">
+        <div className="max-w-apple mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
           <p>MediKiosk Prototype • Smart India Hackathon 2026 (SIH26047) • Ministry of Ayush / AIIA</p>
           <p>CSE494 Intelligent NoSQL Databases • MongoDB Community</p>
         </div>

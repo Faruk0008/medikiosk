@@ -849,7 +849,7 @@ export default function PatientPortal() {
               )}
             </AnimatePresence>
 
-            <div className="pt-8 mt-8 hairline-t flex items-center justify-between">
+            <div className="sticky bottom-0 z-20 bg-apple-surface/95 backdrop-blur-md pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] px-4 -mx-6 sm:mx-0 sm:px-0 sm:static sm:bg-transparent sm:pt-8 sm:mt-8 hairline-t flex items-center justify-between">
               <Button
                 variant="secondary"
                 onClick={handlePrevStep}
@@ -978,7 +978,7 @@ export default function PatientPortal() {
                   type="text"
                   value={diagnosesInput}
                   onChange={e => setDiagnosesInput(e.target.value)}
-                  className="w-full rounded-[14px] bg-apple-bgSecondary hairline-border px-4 py-2.5 text-sm"
+                  className="w-full rounded-[14px] bg-apple-bgSecondary hairline-border px-4 py-2.5 text-[16px] sm:text-base"
                 />
               </div>
 

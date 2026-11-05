@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
@@ -26,12 +26,25 @@ export default function Navbar({ onOpenCommandPalette }) {
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const menuRef = useRef(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  // Keyboard Escape listener & focus trap for mobile menu
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const onKeyDown = e => {
+      if (e.key === 'Escape') {
+        setMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [mobileMenuOpen]);
 
   const roleTabs = [];
   if (user) {
@@ -61,7 +74,7 @@ export default function Navbar({ onOpenCommandPalette }) {
         }`}
       >
         <div className="max-w-apple mx-auto h-full px-4 sm:px-6 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 shrink-0">
             <Link
               to={user ? roleTabs[0]?.value || '/' : '/'}
               className="flex items-center gap-2 text-apple-text font-semibold text-sm tracking-tight"
@@ -97,12 +110,12 @@ export default function Navbar({ onOpenCommandPalette }) {
             </div>
           )}
 
-          <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             <button
               type="button"
               onClick={onOpenCommandPalette}
               aria-label="Open Command Palette"
-              className="inline-flex items-center gap-2 h-8 px-3 rounded-full bg-apple-bgSecondary hairline-border text-xs text-apple-textSecondary hover:text-apple-text transition"
+              className="inline-flex items-center gap-1.5 sm:gap-2 h-8 px-2.5 sm:px-3 rounded-full bg-apple-bgSecondary hairline-border text-xs text-apple-textSecondary hover:text-apple-text transition min-h-[36px]"
             >
               <Search className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Search</span>
@@ -114,7 +127,7 @@ export default function Navbar({ onOpenCommandPalette }) {
               onClick={() => setLang(lang === 'en' ? 'hi' : 'en')}
               aria-label="Switch Language"
               title="Switch English / Hindi"
-              className="h-8 px-2.5 rounded-full hover:bg-apple-bgSecondary text-xs font-medium text-apple-textSecondary hover:text-apple-text inline-flex items-center gap-1 transition"
+              className="h-8 px-2 sm:px-2.5 rounded-full hover:bg-apple-bgSecondary text-xs font-medium text-apple-textSecondary hover:text-apple-text inline-flex items-center gap-1 transition min-h-[36px]"
             >
               <Languages className="w-3.5 h-3.5" />
               <span>{lang === 'en' ? 'HI' : 'EN'}</span>
@@ -125,7 +138,7 @@ export default function Navbar({ onOpenCommandPalette }) {
               onClick={() => setLargeText(!largeText)}
               aria-label={t('nav.largeText')}
               title={t('nav.largeText')}
-              className={`h-8 w-8 rounded-full inline-flex items-center justify-center transition ${
+              className={`h-8 w-8 rounded-full inline-flex items-center justify-center transition min-h-[36px] min-w-[36px] ${
                 largeText
                   ? 'bg-[#0071e3] text-white'
                   : 'hover:bg-apple-bgSecondary text-apple-textSecondary hover:text-apple-text'
@@ -139,7 +152,7 @@ export default function Navbar({ onOpenCommandPalette }) {
               onClick={() => setHighContrast(!highContrast)}
               aria-label={t('nav.highContrast')}
               title={t('nav.highContrast')}
-              className={`h-8 w-8 rounded-full inline-flex items-center justify-center transition ${
+              className={`h-8 w-8 rounded-full inline-flex items-center justify-center transition min-h-[36px] min-w-[36px] ${
                 highContrast
                   ? 'bg-[#0071e3] text-white'
                   : 'hover:bg-apple-bgSecondary text-apple-textSecondary hover:text-apple-text'
@@ -152,7 +165,7 @@ export default function Navbar({ onOpenCommandPalette }) {
               type="button"
               onClick={toggleTheme}
               aria-label={theme === 'dark' ? t('nav.lightMode') : t('nav.darkMode')}
-              className="h-8 w-8 rounded-full hover:bg-apple-bgSecondary text-apple-textSecondary hover:text-apple-text inline-flex items-center justify-center transition"
+              className="h-8 w-8 rounded-full hover:bg-apple-bgSecondary text-apple-textSecondary hover:text-apple-text inline-flex items-center justify-center transition min-h-[36px] min-w-[36px]"
             >
               {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
@@ -166,7 +179,7 @@ export default function Navbar({ onOpenCommandPalette }) {
                 }}
                 aria-label={t('nav.signOut')}
                 title={`${user.name} — ${t('nav.signOut')}`}
-                className="hidden sm:inline-flex items-center gap-1.5 h-8 px-3 rounded-full hover:bg-apple-bgSecondary text-xs font-medium text-apple-textSecondary hover:text-apple-text transition"
+                className="hidden sm:inline-flex items-center gap-1.5 h-8 px-3 rounded-full hover:bg-apple-bgSecondary text-xs font-medium text-apple-textSecondary hover:text-apple-text transition min-h-[36px]"
               >
                 <LogOut className="w-3.5 h-3.5" />
                 <span>{t('nav.signOut')}</span>
@@ -174,7 +187,7 @@ export default function Navbar({ onOpenCommandPalette }) {
             ) : (
               <Link
                 to="/login"
-                className="hidden sm:inline-flex items-center h-8 px-3.5 rounded-full bg-[#0071e3] hover:bg-[#0077ed] text-white text-xs font-medium transition"
+                className="hidden sm:inline-flex items-center h-8 px-3.5 rounded-full bg-[#0071e3] hover:bg-[#0077ed] text-white text-xs font-medium transition min-h-[36px]"
               >
                 {t('nav.signIn')}
               </Link>
@@ -184,7 +197,8 @@ export default function Navbar({ onOpenCommandPalette }) {
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle Menu"
-              className="md:hidden h-8 w-8 rounded-full hover:bg-apple-bgSecondary inline-flex items-center justify-center text-apple-text"
+              aria-expanded={mobileMenuOpen}
+              className="md:hidden h-9 w-9 rounded-full hover:bg-apple-bgSecondary inline-flex items-center justify-center text-apple-text min-h-[36px] min-w-[36px]"
             >
               {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
             </button>
@@ -195,12 +209,14 @@ export default function Navbar({ onOpenCommandPalette }) {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
+            ref={menuRef}
             initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
-            className="fixed inset-x-0 top-12 bottom-0 z-30 bg-apple-bg p-6 md:hidden flex flex-col justify-between"
+            transition={{ duration: 0.2 }}
+            className="fixed inset-x-0 top-12 bottom-0 z-30 bg-apple-bg/95 backdrop-blur-2xl p-6 md:hidden flex flex-col justify-between overflow-y-auto"
           >
-            <div className="space-y-4">
+            <div className="space-y-4 pt-2">
               {user ? (
                 roleTabs.map(tab => (
                   <button
@@ -210,17 +226,40 @@ export default function Navbar({ onOpenCommandPalette }) {
                       navigate(tab.value);
                       setMobileMenuOpen(false);
                     }}
-                    className="block w-full text-left py-3 text-2xl font-semibold text-apple-text hairline-b"
+                    className={`block w-full text-left py-3.5 text-xl font-semibold hairline-b transition ${
+                      location.pathname === tab.value ? 'text-[#0071e3]' : 'text-apple-text'
+                    }`}
                   >
                     {tab.label}
                   </button>
                 ))
               ) : (
                 <>
+                  <a
+                    href="#overview"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block py-3.5 text-xl font-semibold text-apple-text hairline-b"
+                  >
+                    {t('nav.overview')}
+                  </a>
+                  <a
+                    href="#journey"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block py-3.5 text-xl font-semibold text-apple-text hairline-b"
+                  >
+                    {t('nav.journey')}
+                  </a>
+                  <a
+                    href="#capabilities"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block py-3.5 text-xl font-semibold text-apple-text hairline-b"
+                  >
+                    {t('nav.capabilities')}
+                  </a>
                   <Link
                     to="/login"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="block py-3 text-2xl font-semibold text-apple-text hairline-b"
+                    className="block py-3.5 text-xl font-semibold text-[#0071e3] hairline-b"
                   >
                     {t('nav.signIn')}
                   </Link>
@@ -235,7 +274,7 @@ export default function Navbar({ onOpenCommandPalette }) {
                   setMobileMenuOpen(false);
                   navigate('/');
                 }}
-                className="w-full py-3 rounded-full bg-[#ff3b30] text-white font-semibold text-sm"
+                className="w-full py-3.5 rounded-full bg-[#ff3b30] text-white font-semibold text-sm min-h-[44px] shadow-sm"
               >
                 {t('nav.signOut')}
               </button>

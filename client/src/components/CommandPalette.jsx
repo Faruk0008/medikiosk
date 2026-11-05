@@ -9,7 +9,8 @@ import {
   Sun,
   Languages,
   ArrowRight,
-  LogOut
+  LogOut,
+  X
 } from 'lucide-react';
 import { apiRequest } from '../api/client';
 import { useAuth } from '../context/AuthContext';
@@ -205,7 +206,7 @@ export default function CommandPalette({ open, onClose }) {
   return (
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4">
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-2 sm:pt-20 px-0 sm:px-4 max-sm:items-end">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -214,13 +215,13 @@ export default function CommandPalette({ open, onClose }) {
             className="fixed inset-0 bg-black/40 backdrop-blur-sm"
           />
           <motion.div
-            initial={{ opacity: 0, scale: 0.96, y: -10 }}
+            initial={{ opacity: 0, scale: 0.96, y: 16 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96, y: -10 }}
+            exit={{ opacity: 0, scale: 0.96, y: 16 }}
             transition={{ type: 'spring', stiffness: 440, damping: 32 }}
-            className="relative z-10 w-full max-w-xl rounded-[24px] apple-glass hairline-border shadow-appleModal overflow-hidden"
+            className="relative z-10 w-full max-w-xl rounded-t-[28px] sm:rounded-[24px] apple-glass hairline-border shadow-appleModal overflow-hidden max-h-[85vh] flex flex-col"
           >
-            <div className="flex items-center gap-3 px-5 py-4 hairline-b">
+            <div className="flex items-center gap-3 px-4 sm:px-5 py-3.5 sm:py-4 hairline-b">
               <Search className="w-5 h-5 text-apple-textSecondary shrink-0" />
               <input
                 ref={inputRef}
@@ -229,14 +230,22 @@ export default function CommandPalette({ open, onClose }) {
                 onChange={e => setQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={t('nav.searchPlaceholder')}
-                className="w-full bg-transparent text-base text-apple-text placeholder:text-apple-textSecondary focus:outline-none"
+                className="w-full bg-transparent text-[16px] sm:text-base text-apple-text placeholder:text-apple-textSecondary focus:outline-none"
               />
-              <kbd className="text-xs text-apple-textSecondary font-mono px-2 py-0.5 rounded bg-apple-bgSecondary">
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="Close palette"
+                className="sm:hidden p-1.5 rounded-full hover:bg-apple-bgSecondary text-apple-textSecondary"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <kbd className="hidden sm:inline-block text-xs text-apple-textSecondary font-mono px-2 py-0.5 rounded bg-apple-bgSecondary">
                 ESC
               </kbd>
             </div>
 
-            <div className="max-h-96 overflow-y-auto p-2">
+            <div className="overflow-y-auto p-2 flex-1">
               {combinedItems.map((item, idx) => {
                 const Icon = item.icon;
                 const active = idx === activeIndex;
@@ -246,7 +255,7 @@ export default function CommandPalette({ open, onClose }) {
                     type="button"
                     onMouseEnter={() => setActiveIndex(idx)}
                     onClick={item.run}
-                    className={`w-full text-left px-4 py-3 rounded-[16px] flex items-center justify-between gap-3 transition ${
+                    className={`w-full text-left px-3.5 sm:px-4 py-3 rounded-[16px] flex items-center justify-between gap-3 transition min-h-[44px] ${
                       active ? 'bg-[#0071e3] text-white' : 'text-apple-text hover:bg-apple-bgSecondary'
                     }`}
                   >

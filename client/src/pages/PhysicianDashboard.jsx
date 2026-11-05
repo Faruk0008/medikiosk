@@ -7,7 +7,10 @@ import {
   GitCommit,
   FileText,
   User,
-  Keyboard
+  Keyboard,
+  ArrowLeft,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { apiRequest } from '../api/client';
 import { useI18n } from '../context/I18nContext';
@@ -30,6 +33,7 @@ export default function PhysicianDashboard() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [modeFilter, setModeFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [mobileView, setMobileView] = useState('list'); // 'list' | 'detail' for < lg screens
 
   const [editingField, setEditingField] = useState(null);
   const [draftEdits, setDraftEdits] = useState({});
@@ -118,41 +122,72 @@ export default function PhysicianDashboard() {
 
       setCases(prev => prev.map(c => (c._id === updated._id ? updated : c)));
       setConfirmSheetOpen(false);
-      setEditingField(null);
-
       pushToast({
-        title: 'Case Reviewed & Signed',
-        description: `${updated.physicianEdits?.length || 0} amendment(s) logged in physicianEdits.`,
+        title: 'Clinical Summary Signed',
+        description: `Case ${selectedCase._id.slice(-6)} reviewed & signed off.`,
         type: 'success'
       });
     } catch (err) {
-      pushToast({ title: 'Review Sign-Off Failed', description: err.message, type: 'error' });
+      pushToast({ title: 'Sign-off failed', description: err.message, type: 'error' });
     }
   }
 
   return (
-    <div className="max-w-apple mx-auto px-4 sm:px-6 py-8 space-y-6">
-      {/* Header Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 pb-5 hairline-b">
+    <div className="max-w-apple mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-6 sm:space-y-8">
+      {/* Header */}
+      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 sm:pb-6 hairline-b">
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-[#0071e3]">
-            Clinical Decision & Review
+            Clinical Workspace
           </p>
           <h1 className="text-2xl sm:text-3xl font-semibold tracking-tightHeading mt-0.5">
             {t('physician.title')}
           </h1>
         </div>
-        <div className="inline-flex items-center gap-2 text-xs text-apple-textSecondary bg-apple-bgSecondary px-3.5 py-2 rounded-full hairline-border">
-          <Keyboard className="w-3.5 h-3.5 text-[#0071e3]" />
-          <span>{t('physician.shortcutsHint')}</span>
+
+        {/* Desktop Keyboard Shortcuts Hint + Touch Controls */}
+        <div className="flex items-center gap-2">
+          <div className="hidden lg:inline-flex items-center gap-2 text-xs text-apple-textSecondary bg-apple-bgSecondary px-3.5 py-2 rounded-full hairline-border">
+            <Keyboard className="w-3.5 h-3.5 text-[#0071e3]" />
+            <span>{t('physician.shortcutsHint')}</span>
+          </div>
+
+          {/* Touch-Friendly Action Toolbar */}
+          <div className="inline-flex items-center gap-1.5 p-1 rounded-full bg-apple-bgSecondary hairline-border">
+            <button
+              type="button"
+              onClick={() => setSelectedIdx(prev => Math.max(0, prev - 1))}
+              disabled={selectedIdx === 0}
+              title="Previous Case (K)"
+              className="p-1.5 min-h-[36px] min-w-[36px] rounded-full hover:bg-apple-surface text-apple-textSecondary disabled:opacity-30 flex items-center justify-center transition"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <span className="text-xs font-mono font-medium px-1 text-apple-text">
+              {filteredCases.length > 0 ? `${selectedIdx + 1}/${filteredCases.length}` : '0/0'}
+            </span>
+            <button
+              type="button"
+              onClick={() => setSelectedIdx(prev => Math.min(filteredCases.length - 1, prev + 1))}
+              disabled={selectedIdx >= filteredCases.length - 1}
+              title="Next Case (J)"
+              className="p-1.5 min-h-[36px] min-w-[36px] rounded-full hover:bg-apple-surface text-apple-textSecondary disabled:opacity-30 flex items-center justify-center transition"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Split Workspace */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left Pane: Searchable & Filterable Case List */}
-        <Card className="lg:col-span-4 p-4 space-y-4">
-          <div className="flex items-center gap-2 rounded-full bg-apple-bgSecondary hairline-border px-3.5 py-2">
+        <Card
+          className={`lg:col-span-4 p-4 space-y-4 ${
+            mobileView === 'detail' ? 'hidden lg:block' : 'block'
+          }`}
+        >
+          <div className="flex items-center gap-2 rounded-full bg-apple-bgSecondary hairline-border px-3.5 py-2 min-h-[44px]">
             <Search className="w-4 h-4 text-apple-textSecondary shrink-0" />
             <input
               type="text"
@@ -161,151 +196,207 @@ export default function PhysicianDashboard() {
                 setSearchQuery(e.target.value);
                 setSelectedIdx(0);
               }}
-              placeholder={t('physician.searchCases')}
-              className="w-full bg-transparent text-xs sm:text-sm text-apple-text focus:outline-none"
+              placeholder={t('physician.searchPlaceholder')}
+              className="w-full bg-transparent text-[16px] sm:text-xs text-apple-text placeholder:text-apple-textSecondary focus:outline-none"
             />
           </div>
 
-          <div className="flex flex-wrap gap-1.5">
-            {['all', 'submitted', 'reviewed'].map(st => (
-              <Chip
-                key={st}
-                active={statusFilter === st}
-                onClick={() => {
-                  setStatusFilter(st);
-                  setSelectedIdx(0);
-                }}
-                className="!px-3 !py-1 !text-xs capitalize"
-              >
-                {st}
-              </Chip>
-            ))}
-            {['ayush', 'allopathic'].map(m => (
-              <Chip
-                key={m}
-                active={modeFilter === m}
-                onClick={() => {
-                  setModeFilter(modeFilter === m ? 'all' : m);
-                  setSelectedIdx(0);
-                }}
-                className="!px-3 !py-1 !text-xs uppercase"
-              >
-                {m}
-              </Chip>
-            ))}
+          <div className="space-y-2">
+            <div className="flex flex-wrap gap-1.5">
+              {['all', 'submitted', 'reviewed'].map(st => (
+                <Chip
+                  key={st}
+                  active={statusFilter === st}
+                  onClick={() => {
+                    setStatusFilter(st);
+                    setSelectedIdx(0);
+                  }}
+                >
+                  {st.charAt(0).toUpperCase() + st.slice(1)}
+                </Chip>
+              ))}
+            </div>
+
+            <div className="flex flex-wrap gap-1.5 pt-1">
+              {['all', 'allopathic', 'ayush'].map(m => (
+                <button
+                  key={m}
+                  type="button"
+                  onClick={() => {
+                    setModeFilter(m);
+                    setSelectedIdx(0);
+                  }}
+                  className={`text-xs px-2.5 py-1 min-h-[32px] rounded-full transition ${
+                    modeFilter === m
+                      ? 'bg-apple-text text-apple-bg font-semibold'
+                      : 'text-apple-textSecondary hover:text-apple-text'
+                  }`}
+                >
+                  {m.toUpperCase()}
+                </button>
+              ))}
+            </div>
           </div>
 
-          {loading ? (
-            <div className="space-y-3">
-              <Skeleton className="h-20 w-full" />
-              <Skeleton className="h-20 w-full" />
-              <Skeleton className="h-20 w-full" />
-            </div>
-          ) : (
-            <div className="space-y-2 max-h-[68vh] overflow-y-auto pr-1">
-              {filteredCases.map((c, idx) => {
-                const active = selectedCase?._id === c._id;
+          {/* Case List Scroll Area */}
+          <div className="space-y-2 max-h-[calc(100vh-22rem)] overflow-y-auto pr-1">
+            {loading ? (
+              <div className="space-y-3 p-2">
+                <Skeleton className="h-16 w-full" />
+                <Skeleton className="h-16 w-full" />
+                <Skeleton className="h-16 w-full" />
+              </div>
+            ) : filteredCases.length === 0 ? (
+              <p className="text-xs text-apple-textSecondary text-center py-8">
+                {t('physician.noCases')}
+              </p>
+            ) : (
+              filteredCases.map((c, idx) => {
+                const active = idx === selectedIdx;
+                const hasRedFlags = (c.redFlags || []).length > 0;
                 return (
-                  <button
+                  <div
                     key={c._id}
-                    type="button"
-                    onClick={() => setSelectedIdx(idx)}
-                    className={`w-full text-left p-4 rounded-[18px] transition hairline-border ${
+                    onClick={() => {
+                      setSelectedIdx(idx);
+                      setMobileView('detail');
+                    }}
+                    className={`p-3.5 rounded-[18px] cursor-pointer transition hairline-border min-h-[44px] ${
                       active
-                        ? 'bg-[#0071e3] text-white border-[#0071e3]'
-                        : 'bg-apple-surface hover:bg-apple-bgSecondary text-apple-text'
+                        ? 'bg-[#0071e3] text-white border-[#0071e3] shadow-sm'
+                        : 'bg-apple-bgSecondary hover:bg-apple-surface text-apple-text'
                     }`}
                   >
-                    <div className="flex items-center justify-between text-[11px] mb-1">
-                      <span className="font-semibold flex items-center gap-1">
-                        <User className="w-3 h-3" />
-                        {c.patientName || 'Registered Patient'}
+                    <div className="flex items-center justify-between text-xs">
+                      <span className={`font-semibold truncate max-w-[170px] ${active ? 'text-white' : ''}`}>
+                        {c.patientName || 'Patient'}
                       </span>
                       <span
-                        className={`px-2 py-0.5 rounded-full font-semibold ${
+                        className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${
                           active
                             ? 'bg-white/20 text-white'
-                            : c.priority >= 75
-                            ? 'bg-[#ff3b30]/15 text-[#ff3b30]'
-                            : 'bg-apple-bgSecondary text-apple-textSecondary'
+                            : 'bg-apple-surface text-apple-textSecondary'
                         }`}
                       >
-                        P{c.priority} • {c.mode.toUpperCase()}
+                        {c.mode.toUpperCase()}
                       </span>
                     </div>
-                    <p className="text-sm font-semibold line-clamp-1">
-                      {c.history?.chiefComplaint}
+
+                    <p
+                      className={`text-xs mt-1.5 font-medium truncate ${
+                        active ? 'text-white/95' : 'text-apple-text'
+                      }`}
+                    >
+                      {c.history?.chiefComplaint || 'No chief complaint recorded'}
                     </p>
-                    <div className="mt-1.5 flex items-center justify-between text-[11px] opacity-80">
-                      <span className="capitalize">{c.status}</span>
-                      <span>{new Date(c.createdAt).toLocaleDateString()}</span>
+
+                    <div className="mt-2.5 flex items-center justify-between text-[11px]">
+                      <span className={active ? 'text-white/80' : 'text-apple-textSecondary'}>
+                        Priority {c.priority}
+                      </span>
+                      {hasRedFlags && (
+                        <span
+                          className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                            active
+                              ? 'bg-white text-[#ff3b30]'
+                              : 'bg-[#ff3b30]/15 text-[#ff3b30]'
+                          }`}
+                        >
+                          <AlertTriangle className="w-3 h-3" />
+                          {c.redFlags.length} Flags
+                        </span>
+                      )}
                     </div>
-                  </button>
+                  </div>
                 );
-              })}
-            </div>
-          )}
+              })
+            )}
+          </div>
         </Card>
 
-        {/* Right Pane: Structured Clinical Summary + Inline Edit + Diff Audit Trail */}
-        <div className="lg:col-span-8 space-y-6">
-          {selectedCase ? (
-            <>
-              {/* Red-Flag Alert Banner */}
+        {/* Right Pane: Auto-Structured Clinical Summary + Inline Editor */}
+        <Card
+          className={`lg:col-span-8 p-5 sm:p-8 space-y-6 ${
+            mobileView === 'list' ? 'hidden lg:block' : 'block'
+          }`}
+        >
+          {/* Mobile Back to Cases Button */}
+          <div className="lg:hidden pb-3 hairline-b flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => setMobileView('list')}
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0071e3] min-h-[44px] py-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Back to Case List</span>
+            </button>
+            <span className="text-xs text-apple-textSecondary font-mono">
+              Case {selectedIdx + 1} of {filteredCases.length}
+            </span>
+          </div>
+
+          {!selectedCase ? (
+            <div className="text-center py-20 text-apple-textSecondary space-y-2">
+              <User className="w-8 h-8 mx-auto opacity-50" />
+              <p className="text-sm font-medium">Select a patient case to review structured findings.</p>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {/* Patient Banner */}
+              <div className="flex flex-wrap items-center justify-between gap-4 pb-4 hairline-b">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-xl sm:text-2xl font-semibold tracking-tightHeading">
+                      {selectedCase.patientName}
+                    </h2>
+                    <span className="text-xs uppercase font-mono px-2.5 py-0.5 rounded-full bg-apple-bgSecondary text-apple-textSecondary">
+                      {selectedCase.mode}
+                    </span>
+                  </div>
+                  <p className="text-xs text-apple-textSecondary mt-1">
+                    ABHA: {selectedCase.patientAbhaId || 'Not linked'} • Case ID: {selectedCase._id}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setEditingField(prev => (prev ? null : 'history.chiefComplaint'))}
+                  >
+                    <Edit3 className="w-3.5 h-3.5" />
+                    <span>{editingField ? 'Done Editing (E)' : 'Edit Fields (E)'}</span>
+                  </Button>
+
+                  <Button size="sm" onClick={() => setConfirmSheetOpen(true)}>
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Accept & Sign Off (A)</span>
+                  </Button>
+                </div>
+              </div>
+
+              {/* Red-Flag Banner */}
               {selectedCase.redFlags?.length > 0 && (
-                <div className="p-5 rounded-[22px] bg-[#ff3b30]/10 border border-[#ff3b30]/30 flex items-start gap-3.5">
-                  <AlertTriangle className="w-5 h-5 text-[#ff3b30] shrink-0 mt-0.5" />
-                  <div className="space-y-1">
-                    <p className="text-sm font-semibold text-[#ff3b30]">
-                      Clinical Red Flags Triggered (Priority {selectedCase.priority}/100)
-                    </p>
-                    <div className="flex flex-wrap gap-2 pt-1">
-                      {selectedCase.redFlags.map((rf, i) => (
-                        <span
-                          key={i}
-                          className="text-xs font-medium px-3 py-1 rounded-full bg-[#ff3b30] text-white"
-                        >
-                          {rf.code}: {rf.name}
-                        </span>
-                      ))}
-                    </div>
+                <div className="p-4 rounded-[18px] bg-[#ff3b30]/10 border border-[#ff3b30]/30 space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-[#ff3b30] uppercase tracking-wider">
+                    <AlertTriangle className="w-4 h-4" />
+                    <span>Clinical Red Flags Detected ({selectedCase.redFlags.length})</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    {selectedCase.redFlags.map((rf, idx) => (
+                      <div
+                        key={idx}
+                        className="px-3 py-1.5 rounded-full bg-apple-surface hairline-border text-xs text-[#ff3b30] font-medium"
+                      >
+                        <strong>{rf.code}:</strong> {rf.name} ({rf.rationale})
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
 
-              <Card className="p-8 space-y-6">
-                <div className="flex flex-wrap items-center justify-between gap-4 pb-5 hairline-b">
-                  <div>
-                    <div className="flex items-center gap-2 text-xs text-apple-textSecondary">
-                      <span className="font-semibold text-apple-text">{selectedCase.patientName}</span>
-                      {selectedCase.patientAbhaId && (
-                        <span className="font-mono">• ABHA {selectedCase.patientAbhaId}</span>
-                      )}
-                      <span>• Mode: {selectedCase.mode.toUpperCase()}</span>
-                    </div>
-                    <h2 className="text-xl sm:text-2xl font-semibold tracking-tightHeading mt-1">
-                      Structured Clinical Summary
-                    </h2>
-                  </div>
-
-                  <div className="flex items-center gap-2.5">
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() =>
-                        setEditingField(editingField ? null : 'history.chiefComplaint')
-                      }
-                    >
-                      <Edit3 className="w-3.5 h-3.5" />
-                      <span>{editingField ? t('physician.doneEditing') : t('physician.editSection')}</span>
-                    </Button>
-                    <Button size="sm" onClick={() => setConfirmSheetOpen(true)}>
-                      <Check className="w-3.5 h-3.5" />
-                      <span>{t('physician.acceptAmend')}</span>
-                    </Button>
-                  </div>
-                </div>
-
+              {/* 8-Section Standard Clinical Intake Summary */}
+              <div className="space-y-5">
                 {/* 1. Chief Complaint */}
                 <div className="space-y-1.5">
                   <p className="text-xs font-semibold uppercase tracking-wider text-apple-textSecondary">
@@ -318,17 +409,17 @@ export default function PhysicianDashboard() {
                       onChange={e =>
                         setDraftEdits({ ...draftEdits, 'history.chiefComplaint': e.target.value })
                       }
-                      className="w-full rounded-[14px] bg-apple-bgSecondary hairline-border px-4 py-2.5 text-base font-semibold"
+                      className="w-full rounded-[14px] bg-apple-bgSecondary hairline-border px-4 py-2.5 text-[16px] sm:text-base font-semibold"
                     />
                   ) : (
-                    <p className="text-lg font-semibold text-apple-text">
+                    <p className="text-base sm:text-lg font-semibold text-apple-text">
                       {draftEdits['history.chiefComplaint']}
                     </p>
                   )}
                 </div>
 
                 {/* 2-6. Standard Clinical Sections Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-apple-bgSecondary p-5 rounded-[20px] text-sm">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-apple-bgSecondary p-4 sm:p-5 rounded-[20px] text-sm">
                   <div className="space-y-1">
                     <p className="text-xs font-semibold uppercase tracking-wider text-apple-textSecondary">
                       2. History of Present Illness (HPI)
@@ -340,14 +431,12 @@ export default function PhysicianDashboard() {
                         onChange={e =>
                           setDraftEdits({ ...draftEdits, 'history.hpi.associations': e.target.value })
                         }
-                        className="w-full rounded-[10px] bg-apple-surface hairline-border px-3 py-1.5 text-xs"
+                        placeholder="Associations / details"
+                        className="w-full rounded-[10px] bg-apple-surface hairline-border px-3 py-1.5 text-[16px] sm:text-xs"
                       />
                     ) : (
-                      <p>
-                        Site: {selectedCase.history?.hpi?.site || '—'} • Onset:{' '}
-                        {selectedCase.history?.hpi?.onset || '—'} • Associations:{' '}
-                        {draftEdits['history.hpi.associations'] || '—'} (VAS{' '}
-                        {selectedCase.history?.hpi?.severity}/10)
+                      <p className="text-xs sm:text-sm text-apple-text">
+                        {selectedCase.history?.hpi?.character || '—'} at {selectedCase.history?.hpi?.site || 'site'}. Radiation: {selectedCase.history?.hpi?.radiation || 'None'}. Severity: {selectedCase.history?.hpi?.severity}/10.
                       </p>
                     )}
                   </div>
@@ -356,23 +445,26 @@ export default function PhysicianDashboard() {
                     <p className="text-xs font-semibold uppercase tracking-wider text-apple-textSecondary">
                       3. Past Medical & Surgical
                     </p>
-                    <p>{(selectedCase.history?.pastMedicalSurgical || []).join(', ') || 'None'}</p>
+                    <p className="text-xs sm:text-sm text-apple-text">
+                      {(selectedCase.history?.pastMedicalSurgical || []).join(', ') || 'None recorded'}
+                    </p>
                   </div>
 
                   <div className="space-y-1">
                     <p className="text-xs font-semibold uppercase tracking-wider text-apple-textSecondary">
-                      4. Drug History & Allergies
+                      4. Drug & Allergy Profile
                     </p>
-                    <p>{(selectedCase.history?.drugAllergy || []).join(', ') || 'No known allergies'}</p>
+                    <p className="text-xs sm:text-sm text-apple-text">
+                      {(selectedCase.history?.drugAllergy || []).join(', ') || 'No known drug allergies (NKDA)'}
+                    </p>
                   </div>
 
                   <div className="space-y-1">
                     <p className="text-xs font-semibold uppercase tracking-wider text-apple-textSecondary">
                       5. Family & Personal History
                     </p>
-                    <p>
-                      Diet: {selectedCase.history?.personal?.diet || '—'} • Sleep:{' '}
-                      {selectedCase.history?.personal?.sleep || '—'}
+                    <p className="text-xs sm:text-sm text-apple-text">
+                      Diet: {selectedCase.history?.personal?.diet || 'Standard'} • Sleep: {selectedCase.history?.personal?.sleep || 'Normal'}
                     </p>
                   </div>
 
@@ -380,18 +472,15 @@ export default function PhysicianDashboard() {
                     <p className="text-xs font-semibold uppercase tracking-wider text-apple-textSecondary">
                       6. Review of Systems (ROS)
                     </p>
-                    <p>
-                      CV: {selectedCase.history?.reviewOfSystems?.cardiovascular} • Resp:{' '}
-                      {selectedCase.history?.reviewOfSystems?.respiratory} • Neuro:{' '}
-                      {selectedCase.history?.reviewOfSystems?.neurological} • MSK:{' '}
-                      {selectedCase.history?.reviewOfSystems?.musculoskeletal}
+                    <p className="text-xs sm:text-sm text-apple-text">
+                      Cardio: {selectedCase.history?.reviewOfSystems?.cardiovascular || 'Normal'} • Resp: {selectedCase.history?.reviewOfSystems?.respiratory || 'Normal'} • GI: {selectedCase.history?.reviewOfSystems?.gastrointestinal || 'Normal'} • Neuro: {selectedCase.history?.reviewOfSystems?.neurological || 'Normal'}
                     </p>
                   </div>
                 </div>
 
                 {/* 7. Ayush Dashavidha Pariksha */}
                 {selectedCase.mode === 'ayush' && (
-                  <div className="p-5 rounded-[20px] bg-apple-bgSecondary space-y-2">
+                  <div className="p-4 sm:p-5 rounded-[20px] bg-apple-bgSecondary space-y-2">
                     <p className="text-xs font-semibold uppercase tracking-wider text-[#0071e3]">
                       7. Ayurvedic Dashavidha Pariksha
                     </p>
@@ -412,7 +501,7 @@ export default function PhysicianDashboard() {
                                 'history.dashavidhaPariksha.vikriti': e.target.value
                               })
                             }
-                            className="rounded bg-apple-surface px-2 py-0.5 hairline-border"
+                            className="w-full rounded bg-apple-surface hairline-border px-2 py-1 text-[16px] sm:text-xs"
                           />
                         ) : (
                           <strong>{draftEdits['history.dashavidhaPariksha.vikriti'] || '—'}</strong>
@@ -422,11 +511,23 @@ export default function PhysicianDashboard() {
                         <span className="text-apple-textSecondary">Agni: </span>
                         <strong>{selectedCase.history?.dashavidhaPariksha?.aharaShakti || '—'}</strong>
                       </div>
+                      <div>
+                        <span className="text-apple-textSecondary">Sara: </span>
+                        <strong>{selectedCase.history?.dashavidhaPariksha?.sara || '—'}</strong>
+                      </div>
+                      <div>
+                        <span className="text-apple-textSecondary">Sattva: </span>
+                        <strong>{selectedCase.history?.dashavidhaPariksha?.sattva || '—'}</strong>
+                      </div>
+                      <div>
+                        <span className="text-apple-textSecondary">Vaya: </span>
+                        <strong>{selectedCase.history?.dashavidhaPariksha?.vaya || '—'}</strong>
+                      </div>
                     </div>
                   </div>
                 )}
 
-                {/* 8. Prior Investigations Summary */}
+                {/* 8. Prior Investigations & Lab Timeline */}
                 <div className="space-y-2">
                   <p className="text-xs font-semibold uppercase tracking-wider text-apple-textSecondary">
                     8. Prior Investigations & Documents ({patientTimeline.length})
@@ -464,65 +565,58 @@ export default function PhysicianDashboard() {
                       {selectedCase.physicianEdits.map((ed, idx) => (
                         <div
                           key={idx}
-                          className="p-3.5 rounded-[16px] bg-apple-bgSecondary text-xs space-y-1"
+                          className="p-3 rounded-[14px] bg-apple-bgSecondary text-xs font-mono space-y-1"
                         >
-                          <div className="flex items-center justify-between font-mono text-[11px] text-apple-textSecondary">
-                            <span>{ed.field}</span>
-                            <span>{new Date(ed.when).toLocaleString()}</span>
+                          <div className="flex items-center justify-between text-apple-textSecondary">
+                            <span>Field: {ed.field}</span>
+                            <span>{new Date(ed.when).toLocaleTimeString()}</span>
                           </div>
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span className="line-through text-[#ff3b30] bg-[#ff3b30]/10 px-2 py-0.5 rounded">
-                              {String(ed.old || 'empty')}
-                            </span>
-                            <span>→</span>
-                            <span className="font-semibold text-[#34c759] bg-[#34c759]/10 px-2 py-0.5 rounded">
-                              {String(ed.new)}
-                            </span>
-                          </div>
+                          <p className="text-[#ff3b30] line-through">Old: {JSON.stringify(ed.old)}</p>
+                          <p className="text-[#34c759]">New: {JSON.stringify(ed.new)}</p>
                         </div>
                       ))}
                     </div>
                   </div>
                 )}
-              </Card>
-            </>
-          ) : (
-            <Card className="p-12 text-center text-apple-textSecondary">
-              Select a clinical case from the left pane to begin review.
-            </Card>
+              </div>
+            </div>
           )}
-        </div>
+        </Card>
       </div>
 
-      {/* Confirmation Sheet for Physician Sign-Off */}
+      {/* Confirmation & Amend Sheet */}
       <Sheet
         open={confirmSheetOpen}
         onClose={() => setConfirmSheetOpen(false)}
-        title="Confirm Clinical Summary & Sign Off"
+        title={t('physician.confirmReviewTitle')}
       >
         <div className="space-y-6">
-          <p className="text-sm text-apple-textSecondary leading-relaxed">
-            Signing off transitions this case to <strong>reviewed</strong> status and records any field modifications in the immutable <code>physicianEdits</code> array.
+          <p className="text-xs sm:text-sm text-apple-textSecondary">
+            Review your clinical amendments before writing the permanent diff trail to the database.
           </p>
 
-          <div className="p-4 rounded-[18px] bg-apple-bgSecondary space-y-2 text-xs">
-            <p>
-              <strong>Patient:</strong> {selectedCase?.patientName}
-            </p>
-            <p>
-              <strong>Chief Complaint:</strong> {draftEdits['history.chiefComplaint']}
-            </p>
-            <p>
-              <strong>HPI Associations:</strong> {draftEdits['history.hpi.associations']}
-            </p>
+          <div className="p-4 rounded-[16px] bg-apple-bgSecondary space-y-2 text-xs">
+            <p className="font-semibold text-apple-text">Pending Amendments:</p>
+            {Object.entries(draftEdits).map(([k, v]) => (
+              <div key={k} className="flex justify-between font-mono">
+                <span className="text-apple-textSecondary truncate max-w-[150px] sm:max-w-[180px]">{k}:</span>
+                <span className="font-semibold text-apple-text truncate max-w-[150px] sm:max-w-[180px]">{String(v)}</span>
+              </div>
+            ))}
           </div>
 
-          <div className="flex gap-3 pt-4">
-            <Button variant="secondary" className="flex-1" onClick={() => setConfirmSheetOpen(false)}>
-              Cancel
+          <div className="flex flex-col sm:flex-row items-center gap-3 pt-4">
+            <Button size="lg" className="w-full sm:flex-1" onClick={handleAcceptAndSignOff}>
+              <Check className="w-4 h-4" />
+              <span>Confirm & Sign Off</span>
             </Button>
-            <Button className="flex-1" onClick={handleAcceptAndSignOff}>
-              Confirm & Sign
+            <Button
+              variant="secondary"
+              size="lg"
+              className="w-full sm:w-auto"
+              onClick={() => setConfirmSheetOpen(false)}
+            >
+              Cancel
             </Button>
           </div>
         </div>

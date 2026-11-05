@@ -1,6 +1,7 @@
 {
   "name": "medikiosk-server",
   "version": "1.0.0",
+  "description": "MediKiosk Server - SIH26047 Patient Case-Taking Software (Ministry of Ayush / AIIA)",
   "main": "src/server.js",
   "scripts": {
     "dev": "nodemon src/server.js",
@@ -8,6 +9,28 @@
     "seed": "node src/seed/seed.js",
     "seed:bulk": "node src/seed/seed.js --bulk 100000",
     "benchmark": "node src/scripts/benchmark.js",
-    "test": "jest"
+    "test": "jest --runInBand --forceExit"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.3.0",
+    "zod": "^3.23.4"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.0",
+    "supertest": "^6.3.4"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/src/tests/**/*.test.js"
+    ],
+    "testTimeout": 30000
   }
 }
