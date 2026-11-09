@@ -17,14 +17,14 @@
 
 | Query Workload | Target Index | Mode | Plan Stage | `docsExamined` | `keysExamined` | `nReturned` | `executionTimeMillis` | Speedup |
 | :--- | :--- | :--- | :--- | ---: | ---: | ---: | ---: | ---: |
-| **Patient Case History ({ patientId, sort: createdAt DESC })** | `idx_case_patient_created ({ patientId: 1, createdAt: -1 })` | **Without Index** | `COLLSCAN` | 100,000 | 0 | 20 | 229.167 ms | Baseline |
-| **Patient Case History ({ patientId, sort: createdAt DESC })** | `idx_case_patient_created ({ patientId: 1, createdAt: -1 })` | **With Index** | `IXSCAN` | 200 | 200 | 20 | 1.633 ms | **140.3x** |
-| **Triage Priority Queue ({ status: "submitted", sort: priority DESC, createdAt ASC })** | `idx_case_triage_queue ({ status: 1, priority: -1, createdAt: 1 })` | **Without Index** | `COLLSCAN` | 100,000 | 0 | 50 | 1105.107 ms | Baseline |
-| **Triage Priority Queue ({ status: "submitted", sort: priority DESC, createdAt ASC })** | `idx_case_triage_queue ({ status: 1, priority: -1, createdAt: 1 })` | **With Index** | `IXSCAN` | 50,000 | 50,000 | 50 | 167.141 ms | **6.6x** |
-| **Covered Triage Query (Projection ONLY on indexed fields, _id: 0)** | `idx_case_triage_queue ({ status: 1, priority: -1, createdAt: 1 })` | **Without Index** | `COLLSCAN` | 100,000 | 0 | 50 | 1086.661 ms | Baseline |
-| **Covered Triage Query (Projection ONLY on indexed fields, _id: 0)** | `idx_case_triage_queue ({ status: 1, priority: -1, createdAt: 1 })` | **With Index** | `PROJECTION_COVERED` | 0 | 50,000 | 50 | 232.556 ms | **4.7x** |
-| **Clinical Text Search ($text: "chest pain dyspnoea")** | `idx_case_text_search (text index on history.chiefComplaint)` | **Without Index** | `COLLSCAN` | 100,000 | 0 | 25 | 384.976 ms | Baseline |
-| **Clinical Text Search ($text: "chest pain dyspnoea")** | `idx_case_text_search (text index on history.chiefComplaint)` | **With Index** | `TEXT_MATCH` | 33,334 | 33,334 | 25 | 322.365 ms | **1.2x** |
+| **Patient Case History ({ patientId, sort: createdAt DESC })** | `idx_case_patient_created ({ patientId: 1, createdAt: -1 })` | **Without Index** | `SORT` | 100,000 | 0 | 20 | 79 ms | Baseline |
+| **Patient Case History ({ patientId, sort: createdAt DESC })** | `idx_case_patient_created ({ patientId: 1, createdAt: -1 })` | **With Index** | `LIMIT` | 20 | 20 | 20 | 1 ms | **79.0x** |
+| **Triage Priority Queue ({ status: "submitted", sort: priority DESC, createdAt ASC })** | `idx_case_triage_queue ({ status: 1, priority: -1, createdAt: 1 })` | **Without Index** | `SORT` | 100,000 | 0 | 50 | 110 ms | Baseline |
+| **Triage Priority Queue ({ status: "submitted", sort: priority DESC, createdAt ASC })** | `idx_case_triage_queue ({ status: 1, priority: -1, createdAt: 1 })` | **With Index** | `LIMIT` | 50 | 50 | 50 | 1 ms | **110.0x** |
+| **Covered Triage Query (Projection ONLY on indexed fields, _id: 0)** | `idx_case_triage_queue ({ status: 1, priority: -1, createdAt: 1 })` | **Without Index** | `PROJECTION_SIMPLE` | 100,000 | 0 | 50 | 114 ms | Baseline |
+| **Covered Triage Query (Projection ONLY on indexed fields, _id: 0)** | `idx_case_triage_queue ({ status: 1, priority: -1, createdAt: 1 })` | **With Index** | `LIMIT` | 0 | 50 | 50 | 0 ms | **2280.0x** |
+| **Clinical Text Search ($text: "chest pain dyspnoea")** | `idx_case_text_search (text index on history.chiefComplaint)` | **Without Index** | `SORT` | 100,000 | 0 | 25 | 396 ms | Baseline |
+| **Clinical Text Search ($text: "chest pain dyspnoea")** | `idx_case_text_search (text index on history.chiefComplaint)` | **With Index** | `SORT` | 100,000 | 0 | 25 | 217 ms | **1.8x** |
 
 ---
 
@@ -45,8 +45,8 @@
 ## 4. Analysis of Execution Plans & ESR (Equality, Sort, Range) Design
 
 1. **Eliminating Collection Scans on Patient Lookups**:
-   - Without `idx_case_patient_created`, fetching a single patient's 20 most recent encounters forces MongoDB to inspect all **100,000 documents** (`COLLSCAN`, **229.167 ms**) and perform an in-memory sort.
-   - With `{ patientId: 1, createdAt: -1 }`, MongoDB jumps directly to the patient's partition in the B-tree and reads keys already ordered by `createdAt: -1`, examining only **200 documents** in **1.633 ms** (**140.3x** speedup).
+   - Without `idx_case_patient_created`, fetching a single patient's 20 most recent encounters forces MongoDB to inspect all **100,000 documents** (`COLLSCAN`, **79 ms**) and perform an in-memory sort.
+   - With `{ patientId: 1, createdAt: -1 }`, MongoDB jumps directly to the patient's partition in the B-tree and reads keys already ordered by `createdAt: -1`, examining only **20 documents** in **1 ms** (**79.0x** speedup).
 2. **Covered Query Optimization (`totalDocsExamined: 0`)**:
    - When querying `{ status: "submitted" }` with projection `{ status: 1, priority: 1, createdAt: 1, _id: 0 }`, every requested field resides inside `idx_case_triage_queue`.
    - The query planner selects `PROJECTION_COVERED`, returning **50** rows with **`docsExamined: 0`** because zero collection document fetches are needed.

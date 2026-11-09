@@ -239,7 +239,7 @@ export default function PhysicianDashboard() {
           </div>
 
           {/* Case List Scroll Area */}
-          <div className="space-y-2 max-h-[calc(100vh-22rem)] overflow-y-auto pr-1">
+          <div className="space-y-2 max-h-[calc(100dvh-22rem)] overflow-y-auto pr-1">
             {loading ? (
               <div className="space-y-3 p-2">
                 <Skeleton className="h-16 w-full" />

@@ -35,8 +35,15 @@ async function runBenchmark() {
     {
       name: 'Clinical Text Search ($text: "chest pain dyspnoea")',
       indexName: 'idx_case_text_search (text index on history.chiefComplaint)',
-      buildNoIdx: () => CaseRecord.find({ 'history.chiefComplaint': { $regex: 'chest pain|dyspnoea', $options: 'i' } }).limit(25),
-      build: () => CaseRecord.find({ $text: { $search: 'chest pain dyspnoea' } }).limit(25)
+      // Baseline: regex over every document, sorted in memory (cannot use an index)
+      buildNoIdx: () =>
+        CaseRecord.find({ 'history.chiefComplaint': { $regex: 'chest pain|dyspnoea', $options: 'i' } })
+          .sort({ createdAt: -1 })
+          .limit(25),
+      build: () =>
+        CaseRecord.find({ $text: { $search: 'chest pain dyspnoea' } }, { score: { $meta: 'textScore' } })
+          .sort({ score: { $meta: 'textScore' } })
+          .limit(25)
     }
   ];
 

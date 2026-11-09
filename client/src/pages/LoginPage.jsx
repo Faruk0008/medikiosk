@@ -103,7 +103,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-3rem)] flex items-center justify-center px-4 py-16 bg-apple-bgSecondary">
+    <div className="min-h-[calc(100dvh-3rem)] flex items-center justify-center px-4 py-16 bg-apple-bgSecondary">
       <motion.div
         key={shakeKey}
         animate={error ? { x: [0, -10, 10, -6, 6, 0] } : { x: 0 }}

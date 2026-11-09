@@ -8,7 +8,10 @@ const MedicalDocument = require('../models/MedicalDocument');
 const PhysicianAssignment = require('../models/PhysicianAssignment');
 
 async function connectDB(uri = MONGODB_URI) {
-  const conn = await mongoose.connect(uri);
+  // autoIndex/autoCreate off: collections (with $jsonSchema validators) and indexes are
+  // created explicitly below, in order. Otherwise Mongoose's background work races with
+  // createCollection/collMod (errors 48 'already exists' and 12587 'index build running').
+  const conn = await mongoose.connect(uri, { autoIndex: false, autoCreate: false });
   await applyCollectionValidators(mongoose.connection.db);
   await Promise.all([
     User.syncIndexes(),

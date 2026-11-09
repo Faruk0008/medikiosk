@@ -1055,7 +1055,7 @@ export default function PatientPortal() {
                   return (
                     <div
                       key={idx}
-                      className={`grid grid-cols-12 gap-2 items-center p-2.5 rounded-[14px] transition ${
+                      className={`grid grid-cols-2 sm:grid-cols-12 gap-2 items-center p-2.5 rounded-[14px] transition ${
                         isAbn
                           ? 'bg-[#ff3b30]/10 border border-[#ff3b30]/40'
                           : 'bg-apple-bgSecondary hairline-border'
@@ -1070,7 +1070,7 @@ export default function PatientPortal() {
                           next[idx].name = e.target.value;
                           setInvestigations(next);
                         }}
-                        className="col-span-4 bg-transparent text-xs sm:text-sm font-medium focus:outline-none"
+                        className="col-span-2 sm:col-span-4 bg-transparent text-base sm:text-sm font-medium focus:outline-none min-w-0"
                       />
                       <input
                         type="number"
@@ -1082,7 +1082,7 @@ export default function PatientPortal() {
                           next[idx].value = e.target.value;
                           setInvestigations(next);
                         }}
-                        className={`col-span-2 bg-transparent text-xs sm:text-sm font-semibold focus:outline-none ${
+                        className={`col-span-1 sm:col-span-2 bg-transparent text-base sm:text-sm font-semibold focus:outline-none min-w-0 ${
                           isAbn ? 'text-[#ff3b30]' : 'text-apple-text'
                         }`}
                       />
@@ -1095,7 +1095,7 @@ export default function PatientPortal() {
                           next[idx].unit = e.target.value;
                           setInvestigations(next);
                         }}
-                        className="col-span-2 bg-transparent text-xs text-apple-textSecondary focus:outline-none"
+                        className="col-span-1 sm:col-span-2 bg-transparent text-base sm:text-xs text-apple-textSecondary focus:outline-none min-w-0"
                       />
                       <input
                         type="text"
@@ -1106,12 +1106,12 @@ export default function PatientPortal() {
                           next[idx].refRange = e.target.value;
                           setInvestigations(next);
                         }}
-                        className="col-span-3 bg-transparent text-xs font-mono text-apple-textSecondary focus:outline-none"
+                        className="col-span-2 sm:col-span-3 bg-transparent text-base sm:text-xs font-mono text-apple-textSecondary focus:outline-none min-w-0"
                       />
                       <button
                         type="button"
                         onClick={() => setInvestigations(investigations.filter((_, i) => i !== idx))}
-                        className="col-span-1 flex justify-end text-apple-textSecondary hover:text-[#ff3b30]"
+                        className="col-span-2 sm:col-span-1 flex justify-end text-apple-textSecondary hover:text-[#ff3b30]"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>

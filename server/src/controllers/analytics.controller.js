@@ -106,6 +106,15 @@ async function getMergedPatientTimeline(req, res, next) {
     }
     const pid = new mongoose.Types.ObjectId(patientId);
 
+    if (req.user.role === 'patient') {
+      const own = await Patient.findOne({ userId: req.user._id }).select('_id').lean();
+      if (!own || own._id.toString() !== pid.toString()) {
+        return res.status(403).json({ error: 'Forbidden: you can only view your own timeline' });
+      }
+    } else if (req.user.role === 'triage') {
+      return res.status(403).json({ error: 'Forbidden: insufficient role permissions' });
+    }
+
     const timeline = await CaseRecord.aggregate([
       { $match: { patientId: pid } },
       {
@@ -200,14 +209,15 @@ async function getRedFlagCountsPerWeek(req, res, next) {
 
 async function getCoveredQueryStats(req, res, next) {
   try {
-    const query = CaseRecord.find({ status: 'submitted' })
-      .select({ status: 1, priority: 1, createdAt: 1, _id: 0 })
-      .sort({ priority: -1, createdAt: 1 })
-      .limit(20);
+    const buildQuery = () =>
+      CaseRecord.find({ status: 'submitted' })
+        .select({ status: 1, priority: 1, createdAt: 1, _id: 0 })
+        .sort({ status: 1, priority: -1, createdAt: 1 })
+        .limit(20);
 
     const [results, explain] = await Promise.all([
-      query.lean(),
-      query.explain('executionStats')
+      buildQuery().lean(),
+      buildQuery().explain('executionStats')
     ]);
 
     return res.status(200).json({

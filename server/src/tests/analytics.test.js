@@ -159,7 +159,9 @@ describe('Phase 5: Indexing, Covered Query & Aggregation Pipelines (/api/analyti
       .set('Authorization', `Bearer ${physicianToken}`)
       .expect(200);
 
-    expect(['PROJECTION_COVERED', 'IXSCAN']).toContain(res.body.executionStats.executionStages.stage);
+    const stageTree = JSON.stringify(res.body.executionStats.executionStages);
+    expect(stageTree).toContain('IXSCAN');
+    expect(stageTree).not.toContain('FETCH');
     expect(res.body.executionStats.totalDocsExamined).toBe(0);
     expect(res.body.executionStats.nReturned).toBe(2);
   });

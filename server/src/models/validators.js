@@ -158,40 +158,36 @@ const VALIDATOR_MAP = {
   physicianassignments: physicianAssignmentJsonSchema
 };
 
-async function applyCollectionValidators(db, retries = 5) {
+async function applyCollectionValidators(db) {
   if (!db) return;
   for (const [collectionName, validator] of Object.entries(VALIDATOR_MAP)) {
-    let lastErr;
-    for (let attempt = 0; attempt < retries; attempt++) {
+    const existing = await db.listCollections({ name: collectionName }).toArray();
+    let needsCollMod = existing.length > 0;
+    if (!needsCollMod) {
       try {
-        const existing = await db.listCollections({ name: collectionName }).toArray();
-        if (existing.length === 0) {
-          try {
-            await db.createCollection(collectionName, { validator, validationLevel: 'strict', validationAction: 'error' });
-          } catch (err) {
-            // Handle race condition: Mongoose may auto-create the collection before createCollection runs
-            if (err.code === 48) {
-              await db.command({ collMod: collectionName, validator, validationLevel: 'strict', validationAction: 'error' });
-            } else {
-              throw err;
-            }
-          }
-        } else {
-          await db.command({ collMod: collectionName, validator, validationLevel: 'strict', validationAction: 'error' });
-        }
-        lastErr = null;
-        break; // success
+        await db.createCollection(collectionName, { validator, validationLevel: 'strict', validationAction: 'error' });
       } catch (err) {
-        // Retry if an index build is still running (code 12587)
-        if (err.code === 12587 && attempt < retries - 1) {
-          lastErr = err;
-          await new Promise(r => setTimeout(r, 2000 * (attempt + 1)));
-          continue;
-        }
-        throw err;
+        if (err.code === 48) needsCollMod = true; // NamespaceExists: created concurrently, just set the validator
+        else throw err;
       }
     }
-    if (lastErr) throw lastErr;
+    if (needsCollMod) {
+      let attempts = 0;
+      for (;;) {
+        try {
+          await db.command({ collMod: collectionName, validator, validationLevel: 'strict', validationAction: 'error' });
+          break;
+        } catch (err) {
+          // 12587: an index build is still running on this collection; wait and retry
+          if (err.code === 12587 && attempts < 30) {
+            attempts += 1;
+            await new Promise((r) => setTimeout(r, 1000));
+            continue;
+          }
+          throw err;
+        }
+      }
+    }
   }
 }
 

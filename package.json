@@ -34,6 +34,9 @@
     "testMatch": [
       "**/server/src/tests/**/*.test.js"
     ],
-    "testTimeout": 30000
+    "testTimeout": 30000,
+    "setupFiles": [
+      "<rootDir>/server/src/tests/setupEnv.js"
+    ]
   }
 }

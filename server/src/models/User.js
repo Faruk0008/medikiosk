@@ -8,7 +8,6 @@ const userSchema = new Schema(
     email: {
       type: String,
       required: [true, 'Email is required'],
-      unique: true,
       trim: true,
       match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Please provide a valid email address']
     },
@@ -16,8 +15,6 @@ const userSchema = new Schema(
     language: { type: String, default: 'en', enum: ['en', 'hi', 'sa', 'ta', 'te', 'bn', 'mr', 'gu'] },
     abhaId: {
       type: String,
-      unique: true,
-      sparse: true,
       match: [/^\d{2}-\d{4}-\d{4}-\d{4}$/, 'ABHA ID must follow XX-XXXX-XXXX-XXXX format']
     }
   },

@@ -77,7 +77,7 @@ export default function App() {
                   <Route
                     path="/app/analytics"
                     element={
-                      <RequireAuth>
+                      <RequireAuth allowedRoles={['triage', 'physician']}>
                         <AnalyticsDashboard />
                       </RequireAuth>
                     }

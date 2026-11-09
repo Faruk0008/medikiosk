@@ -6,8 +6,7 @@ const patientSchema = new Schema(
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: [true, 'userId reference is required'],
-      unique: true
+      required: [true, 'userId reference is required']
     },
     demographics: {
       age: {

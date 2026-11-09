@@ -57,7 +57,9 @@ export default function Navbar({ onOpenCommandPalette }) {
     if (user.role === 'triage' || user.role === 'physician') {
       roleTabs.push({ value: '/app/triage', label: t('nav.triage') });
     }
-    roleTabs.push({ value: '/app/analytics', label: t('nav.analytics') });
+    if (user.role === 'triage' || user.role === 'physician') {
+      roleTabs.push({ value: '/app/analytics', label: t('nav.analytics') });
+    }
   }
 
   return (

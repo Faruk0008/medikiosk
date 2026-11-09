@@ -130,16 +130,18 @@ export default function CommandPalette({ open, onClose }) {
         }
       });
     }
-    quickActions.push({
-      id: 'nav_analytics',
-      label: 'Open MongoDB Telemetry & Analytics',
-      category: 'Navigation',
-      icon: Activity,
-      run: () => {
-        navigate('/app/analytics');
-        onClose();
-      }
-    });
+    if (user.role === 'triage' || user.role === 'physician') {
+      quickActions.push({
+        id: 'nav_analytics',
+        label: 'Open MongoDB Telemetry & Analytics',
+        category: 'Navigation',
+        icon: Activity,
+        run: () => {
+          navigate('/app/analytics');
+          onClose();
+        }
+      });
+    }
     quickActions.push({
       id: 'act_logout',
       label: 'Sign Out of MediKiosk',

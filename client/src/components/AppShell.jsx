@@ -17,7 +17,7 @@ export default function AppShell({ children }) {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-apple-bg text-apple-text">
+    <div className="min-h-[100dvh] flex flex-col bg-apple-bg text-apple-text">
       <Navbar onOpenCommandPalette={() => setPaletteOpen(true)} />
       <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
       <main id="main-content" className="flex-1">

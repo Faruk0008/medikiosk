@@ -191,6 +191,8 @@ async function runSeed(customOpts = null) {
 
   await connectDB();
   await mongoose.connection.dropDatabase();
+  // dropDatabase also removes validators and indexes; re-apply them so seeded data is validated
+  await connectDB();
 
   const passwordHash = await bcrypt.hash('password123', 10);
 
@@ -357,7 +359,8 @@ async function runSeed(customOpts = null) {
     const pat = allPatients[i % allPatients.length];
     const tpl = preEvaluatedTemplates[i % preEvaluatedTemplates.length];
     const status = statuses[i % statuses.length];
-    const daysAgo = i % 180;
+    // drafts are TTL-purged after 7 days, so keep seeded drafts recent
+    const daysAgo = status === 'draft' ? i % 6 : i % 180;
     const createdAt = new Date(nowMs - daysAgo * 86400000 - (i % 7200) * 1000);
 
     bulkCases.push({
@@ -368,6 +371,11 @@ async function runSeed(customOpts = null) {
       createdAt,
       history: tpl.history,
       redFlags: status === 'draft' ? [] : tpl.redFlags,
+      // Older submitted cases were already handled; only the last ~2 days stay in the live triage queue
+      triageAcknowledged: status === 'submitted' && daysAgo >= 2,
+      ...(status === 'submitted' && daysAgo >= 2
+        ? { triageAcknowledgedAt: new Date(createdAt.getTime() + 600000) }
+        : {}),
       physicianEdits: status === 'reviewed'
         ? [
             {

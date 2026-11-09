@@ -7,6 +7,11 @@ async function getTriageQueue(req, res, next) {
     const statusFilter = req.query.status || 'submitted';
     const filter = { status: statusFilter };
 
+    // Acknowledged cases leave the live queue unless explicitly requested
+    if (req.query.includeAcknowledged !== 'true') {
+      filter.triageAcknowledged = { $ne: true };
+    }
+
     if (req.query.minPriority !== undefined) {
       filter.priority = { $gte: Number(req.query.minPriority) };
     }

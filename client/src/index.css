@@ -44,6 +44,12 @@ html.dark.a11y-high-contrast {
 }
 
 @layer base {
+  /* Prevent iOS Safari zoom-on-focus and stray horizontal scroll on phones */
+  @media (max-width: 639px) {
+    input, select, textarea { font-size: 16px; }
+  }
+  html, body { max-width: 100%; overflow-x: hidden; }
+
   html {
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter Variable', 'Inter', system-ui, sans-serif;
     background-color: var(--bg-primary);
