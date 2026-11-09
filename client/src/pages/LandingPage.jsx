@@ -87,20 +87,39 @@ export default function LandingPage() {
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(0);
   const [userInteracted, setUserInteracted] = useState(false);
+  const [isJourneyVisible, setIsJourneyVisible] = useState(false);
   const interactionTimer = useRef(null);
   const journeyRef = useRef(null);
   const AUTO_CYCLE_MS = 3500;
 
-  // Auto-cycle through steps
+  // Observe journey section visibility so auto-cycling only runs when visible
   useEffect(() => {
-    if (userInteracted) return;
-    const interval = setInterval(() => {
+    const section = journeyRef.current;
+    if (!section) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsJourneyVisible(entry.isIntersecting);
+      },
+      { threshold: 0.15 }
+    );
+    observer.observe(section);
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Auto-cycle through steps when journey section is in view
+  useEffect(() => {
+    if (userInteracted || !isJourneyVisible) return;
+
+    const timer = setTimeout(() => {
       setActiveStep(prev => (prev + 1) % JOURNEY_STEPS.length);
     }, AUTO_CYCLE_MS);
-    return () => clearInterval(interval);
-  }, [userInteracted]);
 
-  // When user clicks a step, pause auto-cycle for 8 seconds then resume
+    return () => clearTimeout(timer);
+  }, [userInteracted, isJourneyVisible, activeStep]);
+
+  // When user clicks a step, jump to it and pause auto-cycle for 8 seconds
   const handleStepClick = useCallback((idx) => {
     setActiveStep(idx);
     setUserInteracted(true);
@@ -108,36 +127,53 @@ export default function LandingPage() {
     interactionTimer.current = setTimeout(() => setUserInteracted(false), 8000);
   }, []);
 
-  // Scroll-based step detection using IntersectionObserver
+  // Update active step as user scrolls through the steps on the left
   useEffect(() => {
     const section = journeyRef.current;
     if (!section) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
-            const idx = Number(entry.target.getAttribute('data-journey-index'));
-            if (!isNaN(idx)) {
-              setActiveStep(idx);
-              setUserInteracted(true);
-              if (interactionTimer.current) clearTimeout(interactionTimer.current);
-              interactionTimer.current = setTimeout(() => setUserInteracted(false), 5000);
-            }
+    let scrollTimeout;
+    const handleScroll = () => {
+      const items = section.querySelectorAll('[data-journey-index]');
+      if (!items.length) return;
+
+      const triggerY = window.innerHeight * 0.4;
+      let closestIdx = -1;
+      let closestDistance = Infinity;
+
+      items.forEach((item) => {
+        const rect = item.getBoundingClientRect();
+        // Distance from item top to trigger line
+        const distance = Math.abs(rect.top - triggerY);
+        if (rect.top <= window.innerHeight * 0.75 && rect.bottom >= 80) {
+          if (distance < closestDistance) {
+            closestDistance = distance;
+            closestIdx = Number(item.getAttribute('data-journey-index'));
           }
-        });
-      },
-      { root: null, rootMargin: '-30% 0px -30% 0px', threshold: 0.5 }
-    );
+        }
+      });
 
-    const items = section.querySelectorAll('[data-journey-index]');
-    items.forEach((el) => observer.observe(el));
+      if (closestIdx !== -1 && closestIdx !== activeStep) {
+        setActiveStep(closestIdx);
+        // Briefly pause auto-cycle during manual scrolling
+        setUserInteracted(true);
+        if (interactionTimer.current) clearTimeout(interactionTimer.current);
+        interactionTimer.current = setTimeout(() => setUserInteracted(false), 4000);
+      }
+    };
 
+    const onScroll = () => {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(handleScroll, 60);
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
     return () => {
-      items.forEach((el) => observer.unobserve(el));
+      window.removeEventListener('scroll', onScroll);
+      clearTimeout(scrollTimeout);
       if (interactionTimer.current) clearTimeout(interactionTimer.current);
     };
-  }, []);
+  }, [activeStep]);
 
   function handlePrimaryAction() {
     if (user) {
