@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Fingerprint,
   MessageSquare,
@@ -86,19 +86,57 @@ export default function LandingPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(0);
+  const [userInteracted, setUserInteracted] = useState(false);
+  const interactionTimer = useRef(null);
+  const journeyRef = useRef(null);
+  const AUTO_CYCLE_MS = 3500;
 
+  // Auto-cycle through steps
   useEffect(() => {
-    const handleScroll = () => {
-      const elements = document.querySelectorAll('[data-journey-index]');
-      elements.forEach(el => {
-        const rect = el.getBoundingClientRect();
-        if (rect.top >= 80 && rect.top <= window.innerHeight * 0.55) {
-          setActiveStep(Number(el.getAttribute('data-journey-index')));
-        }
-      });
+    if (userInteracted) return;
+    const interval = setInterval(() => {
+      setActiveStep(prev => (prev + 1) % JOURNEY_STEPS.length);
+    }, AUTO_CYCLE_MS);
+    return () => clearInterval(interval);
+  }, [userInteracted]);
+
+  // When user clicks a step, pause auto-cycle for 8 seconds then resume
+  const handleStepClick = useCallback((idx) => {
+    setActiveStep(idx);
+    setUserInteracted(true);
+    if (interactionTimer.current) clearTimeout(interactionTimer.current);
+    interactionTimer.current = setTimeout(() => setUserInteracted(false), 8000);
+  }, []);
+
+  // Scroll-based step detection using IntersectionObserver
+  useEffect(() => {
+    const section = journeyRef.current;
+    if (!section) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+            const idx = Number(entry.target.getAttribute('data-journey-index'));
+            if (!isNaN(idx)) {
+              setActiveStep(idx);
+              setUserInteracted(true);
+              if (interactionTimer.current) clearTimeout(interactionTimer.current);
+              interactionTimer.current = setTimeout(() => setUserInteracted(false), 5000);
+            }
+          }
+        });
+      },
+      { root: null, rootMargin: '-30% 0px -30% 0px', threshold: 0.5 }
+    );
+
+    const items = section.querySelectorAll('[data-journey-index]');
+    items.forEach((el) => observer.observe(el));
+
+    return () => {
+      items.forEach((el) => observer.unobserve(el));
+      if (interactionTimer.current) clearTimeout(interactionTimer.current);
     };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   function handlePrimaryAction() {
@@ -191,7 +229,7 @@ export default function LandingPage() {
       </section>
 
       {/* 5-Step Patient Journey (Stacked on Mobile, Sticky on Desktop) */}
-      <section id="journey" className="py-20 sm:py-28 px-4 sm:px-6">
+      <section id="journey" className="py-20 sm:py-28 px-4 sm:px-6" ref={journeyRef}>
         <div className="max-w-apple mx-auto">
           <div className="max-w-2xl mb-12 sm:mb-16">
             <p className="text-xs font-semibold uppercase tracking-widest text-[#0071e3] mb-2">
@@ -200,6 +238,35 @@ export default function LandingPage() {
             <h2 className="text-2xl sm:text-4xl md:text-5xl font-semibold tracking-tightHeading">
               {t('landing.journeyHeader')}
             </h2>
+          </div>
+
+          {/* Step Progress Dots (Desktop) */}
+          <div className="hidden lg:flex items-center gap-2 mb-10">
+            {JOURNEY_STEPS.map((item, idx) => (
+              <button
+                key={item.id}
+                onClick={() => handleStepClick(idx)}
+                className="group flex items-center gap-1.5 focus:outline-none"
+                aria-label={`Go to step ${item.step}`}
+              >
+                <div className={`relative h-1.5 rounded-full transition-all duration-500 ${
+                  idx === activeStep ? 'w-10 bg-[#0071e3]' : 'w-4 bg-apple-textSecondary/20 group-hover:bg-apple-textSecondary/40'
+                }`}>
+                  {idx === activeStep && !userInteracted && (
+                    <motion.div
+                      className="absolute inset-y-0 left-0 rounded-full bg-[#0071e3]/60"
+                      initial={{ width: '0%' }}
+                      animate={{ width: '100%' }}
+                      transition={{ duration: AUTO_CYCLE_MS / 1000, ease: 'linear' }}
+                      key={`progress-${activeStep}`}
+                    />
+                  )}
+                </div>
+              </button>
+            ))}
+            <span className="ml-2 text-[11px] font-mono text-apple-textSecondary">
+              {String(activeStep + 1).padStart(2, '0')} / {String(JOURNEY_STEPS.length).padStart(2, '0')}
+            </span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
@@ -212,9 +279,9 @@ export default function LandingPage() {
                   <div
                     key={item.id}
                     data-journey-index={idx}
-                    onClick={() => setActiveStep(idx)}
-                    className={`cursor-pointer transition-opacity duration-300 ${
-                      active ? 'opacity-100' : 'opacity-40 hover:opacity-75'
+                    onClick={() => handleStepClick(idx)}
+                    className={`cursor-pointer transition-all duration-500 ${
+                      active ? 'opacity-100 translate-x-0' : 'opacity-40 hover:opacity-75'
                     }`}
                   >
                     <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#0071e3] mb-2 sm:mb-3">
@@ -230,28 +297,35 @@ export default function LandingPage() {
                     </p>
 
                     {/* Mobile-only inline preview card */}
-                    <div className="block lg:hidden mt-5">
-                      <Card className="p-5 bg-apple-bgSecondary space-y-3">
-                        <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-apple-textSecondary">
-                          <span>{item.previewTitle}</span>
-                          <Icon className="w-4 h-4 text-[#0071e3]" />
-                        </div>
-                        <p className="text-base sm:text-lg font-semibold text-apple-text">
-                          {item.previewMetric}
-                        </p>
-                        <div className="flex flex-wrap gap-1.5 pt-1">
-                          {item.previewPills.map(pill => (
-                            <span
-                              key={pill}
-                              className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-apple-surface text-apple-text hairline-border"
-                            >
-                              <CheckCircle2 className="w-3 h-3 text-[#34c759]" />
-                              {pill}
-                            </span>
-                          ))}
-                        </div>
-                      </Card>
-                    </div>
+                    {active && (
+                      <motion.div
+                        className="block lg:hidden mt-5"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <Card className="p-5 bg-apple-bgSecondary space-y-3">
+                          <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-apple-textSecondary">
+                            <span>{item.previewTitle}</span>
+                            <Icon className="w-4 h-4 text-[#0071e3]" />
+                          </div>
+                          <p className="text-base sm:text-lg font-semibold text-apple-text">
+                            {item.previewMetric}
+                          </p>
+                          <div className="flex flex-wrap gap-1.5 pt-1">
+                            {item.previewPills.map(pill => (
+                              <span
+                                key={pill}
+                                className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-apple-surface text-apple-text hairline-border"
+                              >
+                                <CheckCircle2 className="w-3 h-3 text-[#34c759]" />
+                                {pill}
+                              </span>
+                            ))}
+                          </div>
+                        </Card>
+                      </motion.div>
+                    )}
                   </div>
                 );
               })}
@@ -259,41 +333,53 @@ export default function LandingPage() {
 
             {/* Desktop Sticky Preview Card */}
             <div className="hidden lg:block lg:col-span-6 lg:sticky lg:top-24">
-              <Card className="p-8 sm:p-10 min-h-[360px] flex flex-col justify-between bg-apple-bgSecondary">
+              <Card className="p-8 sm:p-10 min-h-[360px] flex flex-col justify-between bg-apple-bgSecondary overflow-hidden">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-mono uppercase tracking-wider text-apple-textSecondary">
                     Step {currentStepObj.step} — {currentStepObj.label}
                   </span>
-                  <div className="h-10 w-10 rounded-full bg-[#0071e3]/10 text-[#0071e3] flex items-center justify-center">
+                  <motion.div
+                    className="h-10 w-10 rounded-full bg-[#0071e3]/10 text-[#0071e3] flex items-center justify-center"
+                    key={`icon-${currentStepObj.id}`}
+                    initial={{ scale: 0.5, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                  >
                     <StepIcon className="w-5 h-5" />
-                  </div>
+                  </motion.div>
                 </div>
 
-                <motion.div
-                  key={currentStepObj.id}
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                  className="my-8 p-6 rounded-[20px] bg-apple-surface hairline-border shadow-apple space-y-4"
-                >
-                  <p className="text-xs font-semibold uppercase tracking-wider text-apple-textSecondary">
-                    {currentStepObj.previewTitle}
-                  </p>
-                  <p className="text-xl sm:text-2xl font-semibold text-apple-text">
-                    {currentStepObj.previewMetric}
-                  </p>
-                  <div className="flex flex-wrap gap-2 pt-2">
-                    {currentStepObj.previewPills.map(pill => (
-                      <span
-                        key={pill}
-                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-apple-bgSecondary text-apple-text"
-                      >
-                        <CheckCircle2 className="w-3.5 h-3.5 text-[#34c759]" />
-                        {pill}
-                      </span>
-                    ))}
-                  </div>
-                </motion.div>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={currentStepObj.id}
+                    initial={{ opacity: 0, y: 20, scale: 0.97 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -20, scale: 0.97 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+                    className="my-8 p-6 rounded-[20px] bg-apple-surface hairline-border shadow-apple space-y-4"
+                  >
+                    <p className="text-xs font-semibold uppercase tracking-wider text-apple-textSecondary">
+                      {currentStepObj.previewTitle}
+                    </p>
+                    <p className="text-xl sm:text-2xl font-semibold text-apple-text">
+                      {currentStepObj.previewMetric}
+                    </p>
+                    <div className="flex flex-wrap gap-2 pt-2">
+                      {currentStepObj.previewPills.map((pill, pIdx) => (
+                        <motion.span
+                          key={pill}
+                          initial={{ opacity: 0, x: -8 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: pIdx * 0.08 + 0.15 }}
+                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-apple-bgSecondary text-apple-text"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5 text-[#34c759]" />
+                          {pill}
+                        </motion.span>
+                      ))}
+                    </div>
+                  </motion.div>
+                </AnimatePresence>
 
                 <div className="flex items-center justify-between text-xs text-apple-textSecondary">
                   <span>SIH26047 • All India Institute of Ayurveda</span>
